@@ -3,118 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Horizon Hub | CGJZCZJ</title>
+    <title>Horizon Collector | CGJZCZJ</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --fh-pink: #ff2d55;
-            --fh-yellow: #f2d638;
-            --fh-cyan: #00f2ff;
-            --bg-carbon: #0a0a0c;
-            --card-glass: rgba(255, 255, 255, 0.05);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #0a0a0c; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: var(--bg-carbon); color: white;
             font-family: 'Inter', sans-serif; overflow: hidden;
         }
 
-        /* --- BACKGROUND ENGINE --- */
+        /* --- BACKGROUND --- */
         #master-bg {
             position: fixed; inset: 0; z-index: -1;
             background-size: cover; background-position: center;
-            filter: brightness(0.4) blur(5px);
-            transition: background-image 0.8s ease-in-out;
+            filter: brightness(0.3) blur(8px);
+            background-image: url('https://news.xbox.com/en-us/wp-content/uploads/sites/2/2021/06/ForzaHorizon5_KeyArt_Horizontal_RGB_Final.jpg');
         }
 
-        /* --- SCREENS --- */
-        .screen {
-            position: absolute; inset: 0; display: none;
-            flex-direction: column; padding-top: env(safe-area-inset-top);
-        }
-        .screen.active { display: flex; animation: pageIn 0.4s ease-out; }
-        @keyframes pageIn { from { opacity: 0; transform: scale(1.05); } to { opacity: 1; transform: scale(1); } }
-
-        /* --- FORZA HEADERS --- */
+        /* --- HEADER --- */
         .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            position: relative; padding: 15px; display: flex; flex-direction: column; align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
         }
-        .header-title { 
-            font-family: 'Oswald', sans-serif; font-size: 1.5rem; 
-            font-style: italic; text-transform: uppercase; display: flex; align-items: center; gap: 10px;
-        }
-        .driver-badge {
-            background: var(--fh-yellow); color: black; padding: 5px 12px;
-            font-weight: 900; transform: skewX(-15deg); font-size: 0.9rem;
+        .nav-trigger { position: absolute; left: 15px; top: 20px; font-size: 1.5rem; cursor: pointer; }
+        .user-name { font-family: 'Oswald', sans-serif; font-size: 1.2rem; text-transform: uppercase; font-style: italic; }
+        .gear-icon { position: absolute; right: 65px; top: 18px; font-size: 1.4rem; cursor: pointer; }
+        #plus-btn { 
+            position: absolute; right: 15px; top: 55px; width: 40px; height: 40px; 
+            background: var(--fh-pink); border-radius: 50%; display: flex; 
+            align-items: center; justify-content: center; font-weight: 900; cursor: pointer;
         }
 
-        /* --- NAVIGATION TABS --- */
-        .tabs { display: flex; gap: 5px; padding: 0 20px; margin-bottom: 10px; }
-        .tab {
-            flex: 1; padding: 12px; background: rgba(255,255,255,0.1);
-            text-align: center; font-family: 'Oswald', sans-serif; font-style: italic;
-            text-transform: uppercase; cursor: pointer; transition: 0.3s;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        /* --- DROPDOWN --- */
+        #game-dropdown {
+            position: absolute; top: 50px; left: 15px; background: #222; 
+            display: none; flex-direction: column; z-index: 500; border: 1px solid #444;
         }
-        .tab.active { background: var(--fh-pink); color: white; }
+        .drop-item { padding: 15px 30px; font-family: 'Oswald'; border-bottom: 1px solid #333; cursor: pointer; }
 
-        /* --- CAR LIST --- */
-        .list-scroll { flex: 1; overflow-y: auto; padding: 0 20px 100px 20px; }
+        /* --- LIST --- */
+        .list-container { flex: 1; overflow-y: auto; padding: 10px 20px 100px; height: 80vh; }
         .car-card {
-            background: var(--card-glass); border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 8px; border-radius: 4px; display: flex; align-items: center;
-            padding: 10px; transition: 0.2s; position: relative;
+            background: rgba(255,255,255,0.05); margin-bottom: 5px; padding: 12px;
+            display: flex; align-items: center; border-left: 4px solid #444;
+            opacity: 0.4; filter: grayscale(1); transition: 0.3s;
         }
-        .car-card.greyed { opacity: 0.3; filter: grayscale(1); }
-        .car-card .pi-box {
-            width: 45px; height: 45px; background: #555;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 0.8rem; margin-right: 15px;
-            border-bottom: 4px solid var(--fh-cyan);
-        }
+        .car-card.owned { opacity: 1; filter: grayscale(0); border-left-color: var(--fh-pink); }
+        .pi-badge { background: #444; padding: 5px; font-weight: 900; font-size: 0.7rem; margin-right: 15px; min-width: 45px; text-align: center; }
 
-        /* --- ADD BUTTON (+) --- */
-        #fab-add {
-            position: fixed; top: 20px; right: 20px; width: 50px; height: 50px;
-            background: var(--fh-pink); border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-size: 2rem;
-            box-shadow: 0 0 20px var(--fh-pink); z-index: 100; cursor: pointer;
-        }
-
-        /* --- ANIMATIONS (PINATAS/RAIN) --- */
-        #anim-layer { position: fixed; inset: 0; pointer-events: none; z-index: 99; overflow: hidden; }
-        .particle { position: absolute; font-size: 3rem; }
-
-        /* --- WELCOME OVERLAY --- */
-        #welcome-overlay {
-            position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.9);
-            display: none; align-items: center; justify-content: center;
-            font-family: 'Oswald', sans-serif; font-style: italic; font-size: 3rem;
-            text-transform: uppercase; color: var(--fh-yellow);
-        }
+        /* --- ANIMATIONS --- */
+        #anim-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
+        .pinata { position: absolute; font-size: 8rem; top: 40%; transition: 2s linear; left: -150px; }
+        .leaf { position: absolute; font-size: 4rem; transition: 2s ease-out; top: -100px; }
 
         /* --- MODALS --- */
-        .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 2000; display: none; flex-direction: column; padding: 40px 20px;
-        }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; padding: 40px 20px; }
         .modal.active { display: flex; }
-        .close-x { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: white; cursor: pointer; }
-
-        /* --- CAMERA VIEW --- */
-        #camera-feed { width: 100%; height: 100%; object-fit: cover; background: black; }
-
-        /* --- MAIN PAGE BUTTONS --- */
-        .main-btn {
-            background: rgba(255,255,255,0.1); border: 2px solid white;
-            padding: 30px; font-family: 'Oswald', sans-serif; font-size: 1.5rem;
-            margin-bottom: 10px; cursor: pointer; transition: 0.2s;
-            text-transform: uppercase; font-style: italic;
-        }
-        .main-btn:active { background: white; color: black; }
+        .check-item { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #222; padding: 15px; }
+        .close-x { position: absolute; top: 20px; right: 20px; font-size: 2rem; font-weight: 900; }
 
     </style>
 </head>
@@ -122,244 +70,114 @@
 
     <div id="master-bg"></div>
     <div id="anim-layer"></div>
-    <div id="welcome-overlay">WELCOME BACK, <span id="welcome-name"></span></div>
 
-    <div id="fab-add" onclick="showAddMenu()">+</div>
+    <div class="header">
+        <div class="nav-trigger" onclick="toggleDropdown()">▣</div>
+        <div class="user-name" id="display-name">GAMERTAG</div>
+        <div class="gear-icon" onclick="openSettings()">⚙️</div>
+        <div id="plus-btn" onclick="openAddMenu()">+</div>
+        
+        <div id="game-dropdown">
+            <div class="drop-item" onclick="changeGame('FH4')">FH4</div>
+            <div class="drop-item" onclick="changeGame('FH5')">FH5</div>
+            <div class="drop-item" onclick="changeGame('FH6')">FH6</div>
+        </div>
 
-    <div id="screen-main" class="screen active">
-        <div class="header">
-            <div class="header-title">HORIZON HUB</div>
-            <div class="driver-badge" onclick="openSettings()" id="badge-name">DRIVER</div>
-        </div>
-        <div style="padding: 20px; display: flex; flex-direction: column; margin-top: auto;">
-            <button class="main-btn" onclick="switchGame('FH4')">Forza Horizon 4</button>
-            <button class="main-btn" onclick="switchGame('FH5')">Forza Horizon 5</button>
-            <button class="main-btn" onclick="switchGame('FH6')">Forza Horizon 6</button>
-        </div>
-        <div style="position:fixed; bottom:10px; right:15px; font-size:10px; opacity:0.3;">CGJZCZJ | v3.0.1</div>
+        <div style="margin-top: 10px; font-size: 0.8rem; color: var(--fh-yellow);" id="game-title">FORZA HORIZON 5</div>
+        <div style="font-size: 0.7rem; opacity: 0.8;">COLLECTION: <span id="count">0 / 899</span></div>
     </div>
 
-    <div id="screen-game" class="screen">
-        <div class="header">
-            <div class="header-title">
-                <span onclick="toggleGameMenu()" style="cursor:pointer">▣</span>
-                <span id="game-display-title">FH5</span>
-            </div>
-            <div class="driver-badge" onclick="openSettings()" id="badge-name-game">DRIVER</div>
-        </div>
-
-        <div class="tabs">
-            <div id="tab-garage" class="tab active" onclick="setTab('garage')">Garage</div>
-            <div id="tab-collection" class="tab" onclick="setTab('collection')">Collection</div>
-        </div>
-
-        <div style="padding: 0 20px; font-size: 0.8rem; color: var(--fh-yellow); font-weight: bold;">
-            COMPLETION: <span id="count-owned">0</span> / <span id="count-total">899</span>
-        </div>
-
-        <div class="list-scroll" id="car-list">
-            </div>
-    </div>
-
-    <div id="modal-add" class="modal">
-        <div class="close-x" onclick="closeModals()">X</div>
-        <h2 style="font-family:'Oswald'">ADD TO GARAGE</h2>
-        <button class="main-btn" onclick="addKeyboard()">⌨ KEYBOARD</button>
-        <button class="main-btn" onclick="startCamera()">📷 CAMERA (LIVE)</button>
-        <button class="main-btn" onclick="alert('Gallery access coming in next patch!')">📁 UPLOAD</button>
-    </div>
-
-    <div id="modal-camera" class="modal" style="padding:0">
-        <div class="close-x" style="color:white; font-weight:900; text-shadow:0 0 10px black; z-index:100" onclick="stopCamera()">X</div>
-        <video id="camera-feed" autoplay playsinline></video>
-        <div style="position:absolute; bottom:40px; width:100%; text-align:center;">
-            <button class="main-btn" onclick="captureProof()" style="border-radius:50%; width:80px; height:80px; padding:0">◉</button>
-            <p style="text-shadow:2px 2px 5px black">CENTER THE CAR HUD FOR PROOF</p>
-        </div>
-    </div>
+    <div class="list-container" id="master-list"></div>
 
     <div id="modal-settings" class="modal">
         <div class="close-x" onclick="closeModals()">X</div>
-        <h2 style="font-family:'Oswald'">SETTINGS</h2>
-        <label>CHANGE NAME</label>
-        <input type="text" id="input-name" style="width:100%; padding:15px; margin:10px 0; background:#222; border:1px solid #444; color:white;">
+        <h1 style="font-family:'Oswald'">SETTINGS</h1>
+        <label>NEW USERNAME:</label>
+        <input type="text" id="name-input" style="width:100%; padding:15px; background:#111; color:white; border:1px solid #444; margin: 10px 0;">
         
-        <h3 style="font-family:'Oswald'; margin-top:20px;">DLC OWNED</h3>
-        <div id="dlc-list">
-            </div>
-
-        <button class="main-btn" style="margin-top:auto" onclick="saveSettings()">SAVE PROFILE</button>
+        <h3 style="font-family:'Oswald'; margin-top:30px;">DLC CHECKLIST</h3>
+        <div id="dlc-container">
+            <div class="check-item"><input type="checkbox" id="dlc1"> <label>FH5: Hot Wheels</label></div>
+            <div class="check-item"><input type="checkbox" id="dlc2"> <label>FH5: Rally Adventure</label></div>
+            <div class="check-item"><input type="checkbox" id="dlc3"> <label>FH5: Welcome Pack</label></div>
+        </div>
+        <button style="background:var(--fh-pink); color:white; border:none; padding:20px; margin-top:auto; font-weight:900;" onclick="saveSettings()">SAVE & UPDATE</button>
     </div>
 
     <script>
-        // --- DATA & STATE ---
-        let state = JSON.parse(localStorage.getItem('fh_v3_state')) || {
-            name: "",
-            visitedBefore: false,
-            garage: [], // IDs of cars owned
-            currentTab: 'garage',
-            currentGame: 'FH5',
-            dlc: { hotWheels: true, rally: true, carPass: true }
+        let state = JSON.parse(localStorage.getItem('collector_state')) || {
+            name: "", game: 'FH5', owned: [], dlcs: []
         };
 
-        const bgImages = {
-            FH4: 'https://gamingbolt.com/wp-content/uploads/2018/06/forza-horizon-4-mclaren-senna.jpg',
-            FH5: 'https://news.xbox.com/en-us/wp-content/uploads/sites/2/2021/06/ForzaHorizon5_KeyArt_Horizontal_RGB_Final.jpg',
-            FH6: 'https://images.alphacoders.com/131/1317188.jpeg'
-        };
+        const carData = Array.from({length: 899}, (_, i) => ({
+            id: i, name: `Car Model #${i + 1}`, pi: "S1 900", val: "250,000"
+        }));
 
-        // Simulated Car Database (Usually 899 entries)
-        const carDB = [
-            { id: 1, game: 'FH5', name: '2021 Porsche 911 GT3', pi: 'S1 900', val: '225,000', dlc: false },
-            { id: 2, game: 'FH5', name: '2021 Mercedes-AMG One', pi: 'S2 927', val: '2,700,000', dlc: false },
-            { id: 3, game: 'FH5', name: '2022 Sierra Cars 700R', pi: 'A 800', val: 'DLC', dlc: 'rally' },
-            { id: 4, game: 'FH4', name: '2018 McLaren Senna', pi: 'S2 998', val: '1,000,000', dlc: false }
-        ];
-
-        // --- INIT ---
         window.onload = () => {
-            if (!state.name) {
-                const n = prompt("WELCOME TO HORIZON. WHAT IS YOUR GAMERTAG?");
-                state.name = n || "Driver";
-                saveState();
-            } else {
-                showWelcome();
+            if(!state.name) {
+                state.name = prompt("WHAT IS YOUR GAMERTAG?") || "Driver";
+                save();
             }
-            updateUI();
+            document.getElementById('display-name').innerText = state.name;
+            changeGame(state.game);
         };
 
-        function showWelcome() {
-            const overlay = document.getElementById('welcome-overlay');
-            document.getElementById('welcome-name').innerText = state.name;
-            overlay.style.display = 'flex';
-            setTimeout(() => { overlay.style.opacity = '0'; }, 1800);
-            setTimeout(() => { overlay.style.display = 'none'; }, 2200);
+        function changeGame(g) {
+            state.game = g;
+            document.getElementById('game-title').innerText = "FORZA HORIZON " + g.slice(-1);
+            document.getElementById('game-dropdown').style.display = 'none';
+            runAnim(g);
+            render();
+            save();
         }
 
-        // --- NAVIGATION ---
-        function switchGame(game) {
-            state.currentGame = game;
-            document.getElementById('master-bg').style.backgroundImage = `url('${bgImages[game]}')`;
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screen-game').classList.add('active');
-            document.getElementById('game-display-title').innerText = "FORZA HORIZON " + game.slice(-1);
-            runAnimations(game);
-            renderCars();
-        }
-
-        function setTab(t) {
-            state.currentTab = t;
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + t).classList.add('active');
-            renderCars();
-        }
-
-        // --- ANIMATIONS (THE 2-SECOND WHOOSH) ---
-        function runAnimations(game) {
+        function runAnim(g) {
             const layer = document.getElementById('anim-layer');
             layer.innerHTML = '';
-            let emoji = "🪅"; // FH5
-            if (game === "FH4") emoji = "🍂";
-            if (game === "FH6") emoji = "🌸";
-
-            for(let i=0; i<12; i++) {
-                let p = document.createElement('div');
-                p.className = 'particle';
-                p.innerText = emoji;
-                p.style.top = Math.random() * 80 + "vh";
-                p.style.left = "-100px";
-                p.style.transition = "2s linear";
-                layer.appendChild(p);
-                setTimeout(() => { p.style.left = "110vw"; p.style.transform = "rotate(720deg)"; }, 100);
+            if(g === 'FH5') {
+                for(let i=0; i<2; i++) {
+                    let p = document.createElement('div'); p.className = 'pinata'; p.innerText = '🪅';
+                    p.style.top = (30 + (i*20)) + "%"; layer.appendChild(p);
+                    setTimeout(() => { p.style.left = "110vw"; }, 100);
+                }
+            } else if (g === 'FH4') {
+                for(let i=0; i<5; i++) {
+                    let l = document.createElement('div'); l.className = 'leaf'; l.innerText = '🍂';
+                    l.style.left = (Math.random() * 80) + "vw"; layer.appendChild(l);
+                    setTimeout(() => { l.style.top = "110vh"; l.style.left = (Math.random() * 100) + "vw"; }, 100);
+                }
             }
-            setTimeout(() => { layer.innerHTML = ''; }, 2200);
+            setTimeout(() => { layer.innerHTML = ''; }, 2100);
         }
 
-        // --- CAR RENDERING ---
-        function renderCars() {
-            const list = document.getElementById('car-list');
+        function render() {
+            const list = document.getElementById('master-list');
             list.innerHTML = '';
-            
-            const filtered = carDB.filter(c => c.game === state.currentGame);
-            let countOwned = 0;
-
-            filtered.forEach(car => {
-                const owned = state.garage.includes(car.id);
-                if (owned) countOwned++;
-
-                if (state.currentTab === 'garage' && !owned) return;
-
-                const card = document.createElement('div');
-                card.className = `car-card ${!owned ? 'greyed' : ''}`;
-                card.innerHTML = `
-                    <div class="pi-box">${car.pi.split(' ')[0]}<span>${car.pi.split(' ')[1]}</span></div>
-                    <div style="flex:1">
-                        <div style="font-weight:900; font-size:0.9rem">${car.name.toUpperCase()}</div>
-                        <div style="font-size:0.7rem; color:rgba(255,255,255,0.5)">AUTO SHOW: ${car.val} CR</div>
-                    </div>
-                    ${owned ? '✅' : '+'}
-                `;
-                card.onclick = () => {
-                    if (!owned) {
-                        if(confirm(`ADD ${car.name} TO GARAGE?`)) {
-                            state.garage.push(car.id);
-                            saveState();
-                            renderCars();
-                        }
-                    }
+            carData.forEach(car => {
+                const isOwned = state.owned.includes(car.id);
+                const div = document.createElement('div');
+                div.className = `car-card ${isOwned ? 'owned' : ''}`;
+                div.innerHTML = `<div class="pi-badge">${car.pi}</div><div>${car.name}</div>`;
+                div.onclick = () => {
+                    if(!isOwned) state.owned.push(car.id);
+                    else state.owned = state.owned.filter(id => id !== car.id);
+                    save(); render();
                 };
-                list.appendChild(card);
+                list.appendChild(div);
             });
-
-            document.getElementById('count-owned').innerText = countOwned;
-            document.getElementById('count-total').innerText = (state.currentGame === 'FH5') ? 899 : filtered.length;
+            document.getElementById('count').innerText = `${state.owned.length} / 899`;
         }
 
-        // --- CAMERA ENGINE ---
-        async function startCamera() {
-            closeModals();
-            document.getElementById('modal-camera').classList.add('active');
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-            document.getElementById('camera-feed').srcObject = stream;
+        function toggleDropdown() { 
+            const d = document.getElementById('game-dropdown');
+            d.style.display = (d.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        function stopCamera() {
-            const stream = document.getElementById('camera-feed').srcObject;
-            stream.getTracks().forEach(t => t.stop());
-            document.getElementById('modal-camera').classList.remove('active');
-        }
-
-        function captureProof() {
-            alert("SCANNING HUD... PROOF CONFIRMED! CAR ADDED TO COLLECTION.");
-            stopCamera();
-        }
-
-        // --- HELPERS ---
-        function showAddMenu() { document.getElementById('modal-add').classList.add('active'); }
-        function openSettings() { 
-            document.getElementById('modal-settings').classList.add('active'); 
-            document.getElementById('input-name').value = state.name;
-        }
+        function openSettings() { document.getElementById('modal-settings').classList.add('active'); document.getElementById('name-input').value = state.name; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
-        function saveSettings() {
-            state.name = document.getElementById('input-name').value;
-            saveState();
-            location.reload();
-        }
-        function saveState() { localStorage.setItem('fh_v3_state', JSON.stringify(state)); }
-        function updateUI() {
-            document.getElementById('badge-name').innerText = state.name.toUpperCase();
-            document.getElementById('badge-name-game').innerText = state.name.toUpperCase();
-        }
-        function addKeyboard() {
-            const name = prompt("ENTER CAR NAME:");
-            alert("SEARCHING DATABASE FOR: " + name);
-            closeModals();
-        }
-        function toggleGameMenu() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screen-main').classList.add('active');
-        }
+        function saveSettings() { state.name = document.getElementById('name-input').value; save(); location.reload(); }
+        function save() { localStorage.setItem('collector_state', JSON.stringify(state)); }
+        function openAddMenu() { alert("Plus Menu: Voice, Camera, Keyboard coming soon!"); }
     </script>
 </body>
 </html>
