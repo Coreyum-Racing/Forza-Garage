@@ -8,62 +8,40 @@
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #0a0a0c; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--bg-carbon); color: white;
-            font-family: 'Inter', sans-serif; overflow: hidden;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* --- BACKGROUND --- */
-        #master-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background-size: cover; background-position: center;
-            filter: brightness(0.3) blur(8px);
-            background-image: url('https://news.xbox.com/en-us/wp-content/uploads/sites/2/2021/06/ForzaHorizon5_KeyArt_Horizontal_RGB_Final.jpg');
-        }
+        /* --- BACKGROUNDS --- */
+        #master-bg { position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center; filter: brightness(0.4); transition: 1s; }
 
         /* --- HEADER --- */
-        .header {
-            position: relative; padding: 15px; display: flex; flex-direction: column; align-items: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
-        }
-        .nav-trigger { position: absolute; left: 15px; top: 20px; font-size: 1.5rem; cursor: pointer; }
-        .user-name { font-family: 'Oswald', sans-serif; font-size: 1.2rem; text-transform: uppercase; font-style: italic; }
-        .gear-icon { position: absolute; right: 65px; top: 18px; font-size: 1.4rem; cursor: pointer; }
-        #plus-btn { 
-            position: absolute; right: 15px; top: 55px; width: 40px; height: 40px; 
-            background: var(--fh-pink); border-radius: 50%; display: flex; 
-            align-items: center; justify-content: center; font-weight: 900; cursor: pointer;
-        }
+        .header { padding: 20px; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.8); border-bottom: 2px solid var(--fh-pink); }
+        .top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+        .nav-box { display: flex; align-items: center; gap: 10px; cursor: pointer; background: #222; padding: 5px 10px; border: 1px solid #444; }
+        .user-name { font-family: 'Oswald', sans-serif; font-size: 1.8rem; font-style: italic; text-transform: uppercase; color: var(--fh-yellow); }
+        .gear-btn { font-size: 1.5rem; cursor: pointer; }
+        #plus-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--fh-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; box-shadow: 0 0 20px var(--fh-pink); z-index: 100; }
 
-        /* --- DROPDOWN --- */
-        #game-dropdown {
-            position: absolute; top: 50px; left: 15px; background: #222; 
-            display: none; flex-direction: column; z-index: 500; border: 1px solid #444;
-        }
-        .drop-item { padding: 15px 30px; font-family: 'Oswald'; border-bottom: 1px solid #333; cursor: pointer; }
+        /* --- SEARCH & FILTER --- */
+        .filter-bar { width: 100%; padding: 10px 20px; display: flex; gap: 10px; background: #111; }
+        input { flex: 1; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; }
 
         /* --- LIST --- */
-        .list-container { flex: 1; overflow-y: auto; padding: 10px 20px 100px; height: 80vh; }
-        .car-card {
-            background: rgba(255,255,255,0.05); margin-bottom: 5px; padding: 12px;
-            display: flex; align-items: center; border-left: 4px solid #444;
-            opacity: 0.4; filter: grayscale(1); transition: 0.3s;
-        }
-        .car-card.owned { opacity: 1; filter: grayscale(0); border-left-color: var(--fh-pink); }
-        .pi-badge { background: #444; padding: 5px; font-weight: 900; font-size: 0.7rem; margin-right: 15px; min-width: 45px; text-align: center; }
+        .list-container { height: 70vh; overflow-y: auto; padding: 10px 20px 100px; }
+        .car-card { background: rgba(255,255,255,0.05); margin-bottom: 8px; padding: 15px; display: flex; align-items: center; opacity: 0.3; filter: grayscale(1); border-left: 5px solid #444; }
+        .car-card.owned { opacity: 1; filter: grayscale(0); border-left-color: var(--fh-pink); background: rgba(255,45,85,0.1); }
 
-        /* --- ANIMATIONS --- */
-        #anim-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
-        .pinata { position: absolute; font-size: 8rem; top: 40%; transition: 2s linear; left: -150px; }
-        .leaf { position: absolute; font-size: 4rem; transition: 2s ease-out; top: -100px; }
+        /* --- MEGA ANIMATIONS --- */
+        #anim-layer { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+        .big-pinata { position: absolute; font-size: 12rem; animation: dance 3s linear forwards; top: 30%; left: -200px; }
+        @keyframes dance { 0% { left: -200px; transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-50px) rotate(20deg); } 100% { left: 110vw; transform: translateY(0) rotate(40deg); } }
+        .rain { position: absolute; inset: 0; background: url('https://i.imgur.com/8P9pXmq.png'); opacity: 0.3; animation: rain 0.5s linear infinite; }
+        @keyframes rain { from { background-position: 0 0; } to { background-position: 100px 500px; } }
+        .big-leaf { position: absolute; font-size: 6rem; animation: drift 5s ease-in-out forwards; top: -100px; }
+        @keyframes drift { to { top: 110vh; transform: translateX(100px) rotate(720deg); } }
 
         /* --- MODALS --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; padding: 40px 20px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
         .modal.active { display: flex; }
-        .check-item { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #222; padding: 15px; }
-        .close-x { position: absolute; top: 20px; right: 20px; font-size: 2rem; font-weight: 900; }
-
     </style>
 </head>
 <body>
@@ -72,60 +50,70 @@
     <div id="anim-layer"></div>
 
     <div class="header">
-        <div class="nav-trigger" onclick="toggleDropdown()">▣</div>
-        <div class="user-name" id="display-name">GAMERTAG</div>
-        <div class="gear-icon" onclick="openSettings()">⚙️</div>
-        <div id="plus-btn" onclick="openAddMenu()">+</div>
-        
-        <div id="game-dropdown">
-            <div class="drop-item" onclick="changeGame('FH4')">FH4</div>
-            <div class="drop-item" onclick="changeGame('FH5')">FH5</div>
-            <div class="drop-item" onclick="changeGame('FH6')">FH6</div>
+        <div class="top-row">
+            <div class="nav-box" onclick="document.getElementById('game-drop').style.display='block'">
+                <span style="font-size:1.5rem">▣</span> <span id="game-label">FH5</span>
+            </div>
+            <div class="user-name" id="display-name">DRIVER</div>
+            <div class="gear-btn" onclick="openSettings()">⚙️</div>
         </div>
-
-        <div style="margin-top: 10px; font-size: 0.8rem; color: var(--fh-yellow);" id="game-title">FORZA HORIZON 5</div>
-        <div style="font-size: 0.7rem; opacity: 0.8;">COLLECTION: <span id="count">0 / 899</span></div>
+        <div id="game-drop" style="display:none; background:#222; width:100px; position:absolute; left:20px; top:60px; z-index:500; border:1px solid #444;">
+            <div style="padding:10px; border-bottom:1px solid #333" onclick="changeGame('FH4')">FH4</div>
+            <div style="padding:10px; border-bottom:1px solid #333" onclick="changeGame('FH5')">FH5</div>
+            <div style="padding:10px;" onclick="changeGame('FH6')">FH6</div>
+        </div>
     </div>
 
-    <div class="list-container" id="master-list"></div>
+    <div class="filter-bar">
+        <input type="text" id="search" placeholder="Search Manufacturers..." oninput="render()">
+        <button onclick="toggleSort()" style="background:#333; color:white; border:none; padding:10px;">SORT</button>
+    </div>
+
+    <div class="list-container" id="car-list"></div>
+    <div id="plus-btn" onclick="alert('Plus Menu: Keyboard/Camera Coming Next!')">+</div>
+
+    <div id="modal-tutorial" class="modal">
+        <h1 style="font-family:'Oswald'; color:var(--fh-yellow)">HOW TO COLLECT</h1>
+        <p>1. <b>SELECT GAME:</b> Tap the ▣ icon top left to swap games.</p>
+        <p>2. <b>CHECK OFF:</b> Tap any car you've won to turn it PINK and active.</p>
+        <p>3. <b>DLC:</b> Go to Gear (⚙️) to toggle expansion packs.</p>
+        <p>4. <b>SEARCH:</b> Use the top bar to find specific Porsches or Ferraris.</p>
+        <button onclick="closeModals(); startDlcSetup();" style="padding:20px; background:var(--fh-pink); color:white; border:none; font-weight:900; margin-top:20px;">GET STARTED</button>
+    </div>
 
     <div id="modal-settings" class="modal">
-        <div class="close-x" onclick="closeModals()">X</div>
-        <h1 style="font-family:'Oswald'">SETTINGS</h1>
-        <label>NEW USERNAME:</label>
-        <input type="text" id="name-input" style="width:100%; padding:15px; background:#111; color:white; border:1px solid #444; margin: 10px 0;">
-        
-        <h3 style="font-family:'Oswald'; margin-top:30px;">DLC CHECKLIST</h3>
-        <div id="dlc-container">
-            <div class="check-item"><input type="checkbox" id="dlc1"> <label>FH5: Hot Wheels</label></div>
-            <div class="check-item"><input type="checkbox" id="dlc2"> <label>FH5: Rally Adventure</label></div>
-            <div class="check-item"><input type="checkbox" id="dlc3"> <label>FH5: Welcome Pack</label></div>
-        </div>
-        <button style="background:var(--fh-pink); color:white; border:none; padding:20px; margin-top:auto; font-weight:900;" onclick="saveSettings()">SAVE & UPDATE</button>
+        <div style="text-align:right; font-size:2rem;" onclick="closeModals()">X</div>
+        <h2 style="font-family:'Oswald'">SETTINGS & DLC</h2>
+        <input type="text" id="name-input" placeholder="Change Gamertag">
+        <hr style="border:1px solid #333; width:100%; margin:20px 0;">
+        <h3>FH5 EXPANSIONS</h3>
+        <label><input type="checkbox" id="dlc-hw" onchange="save()"> Hot Wheels</label><br><br>
+        <label><input type="checkbox" id="dlc-ra" onchange="save()"> Rally Adventure</label>
+        <button onclick="location.reload()" style="padding:20px; background:var(--fh-pink); color:white; border:none; margin-top:auto;">SAVE & REFRESH</button>
     </div>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('collector_state')) || {
-            name: "", game: 'FH5', owned: [], dlcs: []
-        };
-
-        const carData = Array.from({length: 899}, (_, i) => ({
-            id: i, name: `Car Model #${i + 1}`, pi: "S1 900", val: "250,000"
-        }));
+        let state = JSON.parse(localStorage.getItem('fh_v4_state')) || { name: "", game: 'FH5', owned: [], visited: false };
+        
+        // PLACEHOLDERS - Next update will replace these with the REAL 899 names!
+        const carData = Array.from({length: 899}, (_, i) => ({ id: i, name: i < 5 ? "2021 Porsche 911 GT3" : `Car Model #${i+1}`, pi: "S1 900" }));
 
         window.onload = () => {
-            if(!state.name) {
-                state.name = prompt("WHAT IS YOUR GAMERTAG?") || "Driver";
+            if(!state.visited) {
+                document.getElementById('modal-tutorial').classList.add('active');
+                state.visited = true;
                 save();
             }
-            document.getElementById('display-name').innerText = state.name;
+            document.getElementById('display-name').innerText = state.name.toUpperCase();
             changeGame(state.game);
         };
 
         function changeGame(g) {
             state.game = g;
-            document.getElementById('game-title').innerText = "FORZA HORIZON " + g.slice(-1);
-            document.getElementById('game-dropdown').style.display = 'none';
+            document.getElementById('game-label').innerText = g;
+            document.getElementById('game-drop').style.display = 'none';
+            const bgs = { FH4: 'https://i.imgur.com/3N8pL9s.jpg', FH5: 'https://i.imgur.com/R3S0kX9.jpg', FH6: 'https://i.imgur.com/2Yy5vX2.jpg' };
+            document.getElementById('master-bg').style.backgroundImage = `url('${bgs[g]}')`;
             runAnim(g);
             render();
             save();
@@ -136,28 +124,29 @@
             layer.innerHTML = '';
             if(g === 'FH5') {
                 for(let i=0; i<2; i++) {
-                    let p = document.createElement('div'); p.className = 'pinata'; p.innerText = '🪅';
-                    p.style.top = (30 + (i*20)) + "%"; layer.appendChild(p);
-                    setTimeout(() => { p.style.left = "110vw"; }, 100);
+                    let p = document.createElement('div'); p.className = 'big-pinata'; p.innerText = '🪅';
+                    p.style.animationDelay = (i * 0.5) + "s"; layer.appendChild(p);
                 }
-            } else if (g === 'FH4') {
-                for(let i=0; i<5; i++) {
-                    let l = document.createElement('div'); l.className = 'leaf'; l.innerText = '🍂';
-                    l.style.left = (Math.random() * 80) + "vw"; layer.appendChild(l);
-                    setTimeout(() => { l.style.top = "110vh"; l.style.left = (Math.random() * 100) + "vw"; }, 100);
+            } else if(g === 'FH4') {
+                let r = document.createElement('div'); r.className = 'rain'; layer.appendChild(r);
+                for(let i=0; i<4; i++) {
+                    let l = document.createElement('div'); l.className = 'big-leaf'; l.innerText = '🍂';
+                    l.style.left = (Math.random() * 80) + "vw"; l.style.animationDelay = (i * 1) + "s";
+                    layer.appendChild(l);
                 }
             }
-            setTimeout(() => { layer.innerHTML = ''; }, 2100);
+            setTimeout(() => { if(g !== 'FH4') layer.innerHTML = ''; }, 5000);
         }
 
         function render() {
-            const list = document.getElementById('master-list');
+            const list = document.getElementById('car-list');
+            const term = document.getElementById('search').value.toLowerCase();
             list.innerHTML = '';
-            carData.forEach(car => {
+            carData.filter(c => c.name.toLowerCase().includes(term)).forEach(car => {
                 const isOwned = state.owned.includes(car.id);
                 const div = document.createElement('div');
                 div.className = `car-card ${isOwned ? 'owned' : ''}`;
-                div.innerHTML = `<div class="pi-badge">${car.pi}</div><div>${car.name}</div>`;
+                div.innerHTML = `<div style="background:#444; padding:5px; margin-right:15px;">${car.pi}</div><b>${car.name.toUpperCase()}</b>`;
                 div.onclick = () => {
                     if(!isOwned) state.owned.push(car.id);
                     else state.owned = state.owned.filter(id => id !== car.id);
@@ -165,19 +154,17 @@
                 };
                 list.appendChild(div);
             });
-            document.getElementById('count').innerText = `${state.owned.length} / 899`;
         }
 
-        function toggleDropdown() { 
-            const d = document.getElementById('game-dropdown');
-            d.style.display = (d.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function openSettings() { document.getElementById('modal-settings').classList.add('active'); document.getElementById('name-input').value = state.name; }
+        function openSettings() { document.getElementById('modal-settings').classList.add('active'); }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
-        function saveSettings() { state.name = document.getElementById('name-input').value; save(); location.reload(); }
-        function save() { localStorage.setItem('collector_state', JSON.stringify(state)); }
-        function openAddMenu() { alert("Plus Menu: Voice, Camera, Keyboard coming soon!"); }
+        function save() { localStorage.setItem('fh_v4_state', JSON.stringify(state)); }
+        function startDlcSetup() { 
+            const n = prompt("WHAT IS YOUR GAMERTAG?");
+            state.name = n || "Driver";
+            save();
+            document.getElementById('display-name').innerText = state.name.toUpperCase();
+        }
     </script>
 </body>
 </html>
