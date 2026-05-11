@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Horizon Collector Pro | CGJZCZJ</title>
+    <title>Horizon Collector V8 | CGJZCZJ</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #0a0a0c; }
@@ -11,59 +11,61 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
         /* --- STABLE BACKGROUNDS --- */
-        #master-bg { position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center; filter: brightness(0.3); transition: 1s; }
+        #master-bg { position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center; filter: brightness(0.3); transition: 1s ease-in-out; }
         .bg-fh4 { background: linear-gradient(45deg, #5d4037, #2c1e1a); } /* Autumn Brown */
         .bg-fh5 { background: linear-gradient(45deg, #00897b, #004d40); } /* Jungle Green */
-        .bg-fh6 { background: linear-gradient(45deg, #1a237e, #0d1117); } /* Night Neon Blue */
+        .bg-fh6 { background: linear-gradient(45deg, #1a237e, #4a148c); } /* Deep Japanese Purple/Blue */
 
-        /* --- HEADER & NAVIGATION --- */
+        /* --- HEADER --- */
         .header { padding: 15px; background: rgba(0,0,0,0.9); border-bottom: 3px solid var(--fh-pink); z-index: 1001; position: relative; }
         .top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .user-title { font-family: 'Oswald', sans-serif; font-size: 2rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; }
-        .game-nav { background: #222; padding: 10px; border: 1px solid #444; font-weight: 900; cursor: pointer; }
+        .user-title { font-family: 'Oswald', sans-serif; font-size: 1.8rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; text-align: center; flex: 1; }
+        .game-nav { background: #222; padding: 10px; border: 1px solid #444; font-weight: 900; cursor: pointer; min-width: 80px; text-align: center; }
+        .gear-icon { font-size: 1.8rem; cursor: pointer; min-width: 40px; text-align: right; }
 
-        /* --- LIST & CONTROLS --- */
-        .controls { display: flex; padding: 10px; gap: 10px; background: rgba(0,0,0,0.5); }
-        input#search { flex: 1; padding: 12px; background: #111; border: 1px solid #444; color: white; }
-        select#sort { padding: 10px; background: #333; color: white; border: none; font-family: 'Oswald'; }
-        .list-container { height: 70vh; overflow-y: auto; padding: 10px 15px 150px; }
+        /* --- CONTROLS --- */
+        .controls { display: flex; padding: 10px; gap: 10px; background: rgba(0,0,0,0.6); }
+        input#search { flex: 1; padding: 12px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; }
+        select#sort { padding: 10px; background: #333; color: white; border: none; font-family: 'Oswald'; border-radius: 4px; }
+
+        /* --- LIST --- */
+        .list-container { height: 72vh; overflow-y: auto; padding: 10px 15px 150px; }
         .car-card { background: rgba(255,255,255,0.05); margin-bottom: 8px; padding: 18px; display: flex; align-items: center; border-left: 8px solid #444; opacity: 0.4; filter: grayscale(1); transition: 0.3s; }
         .car-card.owned { opacity: 1; filter: grayscale(0); border-left-color: var(--fh-pink); background: rgba(255,45,85,0.15); }
+        .pi-badge { background: #555; padding: 5px 10px; margin-right: 15px; font-weight: 900; color: white; min-width: 65px; text-align: center; }
 
         /* --- MEGA ANIMATIONS (HORIZONTAL) --- */
         #anim-layer { position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden; }
         
-        /* Piñatas (FH5) */
-        .mega-pinata { position: absolute; font-size: 15rem; left: -300px; animation: move-h 4s linear forwards; }
+        .mega-anim { position: absolute; left: -400px; animation: move-h 4s linear forwards; }
+        
+        /* Specific Styles */
+        .pinata { font-size: 15rem; }
+        .autumn-leaf { font-size: 15rem; }
+        .sakura-leaf { font-size: 15rem; color: #ffb7c5; text-shadow: 0 0 20px #ff69b4; }
+
         @keyframes move-h { 
-            0% { left: -300px; transform: rotate(0deg) translateY(0); }
-            25% { transform: rotate(15deg) translateY(-30px); }
-            75% { transform: rotate(-15deg) translateY(30px); }
-            100% { left: 110vw; transform: rotate(0deg) translateY(0); }
+            0% { left: -400px; transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(15deg) translateY(-40px); }
+            75% { transform: rotate(-15deg) translateY(40px); }
+            100% { left: 115vw; transform: rotate(10deg) translateY(0); }
         }
 
-        /* Leaves (FH4) */
-        .mega-leaf { position: absolute; font-size: 12rem; left: -300px; animation: move-h 6s ease-in-out forwards; }
-
-        /* Japanese Floaties & Koi (FH6) */
-        .jp-lantern { position: absolute; font-size: 10rem; left: -300px; animation: move-h 8s linear forwards; opacity: 0.8; }
-        .koi-fish { position: absolute; font-size: 8rem; left: -300px; animation: move-h 5s ease-in forwards; top: 60%; }
-
-        /* --- SETTINGS --- */
+        /* --- MODAL --- */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; display: none; flex-direction: column; padding: 40px 20px; }
         .modal.active { display: flex; }
     </style>
 </head>
 <body>
 
-    <div id="master-bg" class="bg-fh5"></div>
+    <div id="master-bg"></div>
     <div id="anim-layer"></div>
 
     <div class="header">
         <div class="top-row">
             <div class="game-nav" onclick="document.getElementById('game-pop').style.display='block'">▣ <span id="game-label">FH5</span></div>
             <div class="user-title" id="name-display">DRIVER</div>
-            <div onclick="openSettings()" style="font-size:1.8rem">⚙️</div>
+            <div class="gear-icon" onclick="openSettings()">⚙️</div>
         </div>
         <div id="game-pop" style="display:none; position:absolute; left:15px; top:65px; background:#222; border:1px solid #444; z-index:2001; width:120px;">
             <div style="padding:15px; border-bottom:1px solid #333" onclick="swapGame('FH4')">FH4</div>
@@ -73,11 +75,11 @@
     </div>
 
     <div class="controls">
-        <input type="text" id="search" placeholder="Search..." oninput="updateList()">
+        <input type="text" id="search" placeholder="Filter Cars/Make..." oninput="updateList()">
         <select id="sort" onchange="updateList()">
             <option value="name">A-Z</option>
             <option value="make">MANUFACTURER</option>
-            <option value="pi-desc">PI (DESC)</option>
+            <option value="pi-desc">PI (HIGH-LOW)</option>
         </select>
     </div>
 
@@ -86,13 +88,13 @@
     <div id="modal-settings" class="modal">
         <div style="text-align:right; font-size:2rem" onclick="closeModals()">X</div>
         <h1 style="font-family:'Oswald'">SETTINGS</h1>
-        <label>EDIT GAMERTAG</label>
+        <label>CHANGE GAMERTAG</label>
         <input type="text" id="name-input" style="width:100%; padding:15px; margin:15px 0; background:#111; color:white; border:1px solid #444;">
         <button onclick="saveSettings()" style="padding:20px; background:var(--fh-pink); border:none; color:white; font-weight:900;">SAVE & REFRESH</button>
     </div>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('fh_v7_state')) || { name: "", game: 'FH5', owned: [] };
+        let state = JSON.parse(localStorage.getItem('fh_v8_state')) || { name: "", game: 'FH5', owned: [] };
 
         const carFleet = [
             { id: 1, name: "911 GT3", make: "Porsche", pi: 900, class: "S1" },
@@ -100,11 +102,16 @@
             { id: 3, name: "F8 Tributo", make: "Ferrari", pi: 885, class: "S1" },
             { id: 4, name: "Supra RZ", make: "Toyota", pi: 620, class: "B" },
             { id: 5, name: "AMG One", make: "Mercedes-AMG", pi: 927, class: "S2" },
-            { id: 6, name: "2002 Turbo", make: "BMW", pi: 380, class: "D" },
-            { id: 7, name: "Concept Two", make: "Rimac", pi: 998, class: "S2" },
-            { id: 8, name: "Escort RS", make: "Ford", pi: 550, class: "B" },
-            { id: 9, name: "Huracan", make: "Lamborghini", pi: 820, class: "S1" },
-            { id: 10, name: "Silvia K's", make: "Nissan", pi: 490, class: "C" }
+            { id: 6, name: "Chiron", make: "Bugatti", pi: 999, class: "X" },
+            { id: 7, name: "LFA", make: "Lexus", pi: 810, class: "S1" },
+            { id: 8, name: "Silvia K's", make: "Nissan", pi: 490, class: "C" },
+            { id: 9, name: "Concept Two", make: "Rimac", pi: 998, class: "S2" },
+            { id: 10, name: "Huracan", make: "Lamborghini", pi: 820, class: "S1" },
+            { id: 11, name: "Escort RS", make: "Ford", pi: 550, class: "B" },
+            { id: 12, name: "2002 Turbo", make: "BMW", pi: 380, class: "D" },
+            { id: 13, name: "Vulcan", make: "Aston Martin", pi: 980, class: "S2" },
+            { id: 14, name: "Regal GNX", make: "Buick", pi: 410, class: "C" },
+            { id: 15, name: "Bel Air", make: "Chevrolet", pi: 200, class: "D" }
         ];
 
         window.onload = () => {
@@ -129,26 +136,21 @@
         function runAnims(g) {
             const layer = document.getElementById('anim-layer');
             layer.innerHTML = '';
-            if(g === 'FH5') {
-                for(let i=0; i<2; i++) {
-                    let p = document.createElement('div'); p.className = 'mega-pinata'; p.innerText = '🪅';
-                    p.style.top = (25 + (i * 25)) + "%"; p.style.animationDelay = (i * 0.8) + "s";
-                    layer.appendChild(p);
-                }
-            } else if(g === 'FH4') {
-                for(let i=0; i<3; i++) {
-                    let l = document.createElement('div'); l.className = 'mega-leaf'; l.innerText = '🍂';
-                    l.style.top = (20 + (i * 20)) + "%"; l.style.animationDelay = (i * 1.2) + "s";
-                    layer.appendChild(l);
-                }
-            } else if(g === 'FH6') {
-                let j = document.createElement('div'); j.className = 'jp-lantern'; j.innerText = '🏮';
-                j.style.top = "30%"; layer.appendChild(j);
-                for(let i=0; i<2; i++) {
-                    let k = document.createElement('div'); k.className = 'koi-fish'; k.innerText = '🧡';
-                    k.style.top = (65 + (i * 10)) + "%"; k.style.animationDelay = (i * 2) + "s";
-                    layer.appendChild(k);
-                }
+            
+            let emoji = '🪅';
+            let className = 'pinata';
+            
+            if(g === 'FH4') { emoji = '🍂'; className = 'autumn-leaf'; }
+            if(g === 'FH6') { emoji = '🌸'; className = 'sakura-leaf'; }
+
+            // Spawn 2 Huge Animated Objects
+            for(let i=0; i<2; i++) {
+                let div = document.createElement('div');
+                div.className = `mega-anim ${className}`;
+                div.innerText = emoji;
+                div.style.top = (20 + (i * 35)) + "%";
+                div.style.animationDelay = (i * 0.8) + "s";
+                layer.appendChild(div);
             }
         }
 
@@ -167,7 +169,7 @@
                 const owned = state.owned.includes(car.id);
                 const card = document.createElement('div');
                 card.className = `car-card ${owned ? 'owned' : ''}`;
-                card.innerHTML = `<div style="background:#555; padding:5px; margin-right:15px; font-weight:900;">${car.pi}</div><div><b>${car.make}</b> ${car.name}</div>`;
+                card.innerHTML = `<div class="pi-badge">S1 ${car.pi}</div><div><b>${car.make}</b> ${car.name}</div>`;
                 card.onclick = () => {
                     if(!owned) state.owned.push(car.id);
                     else state.owned = state.owned.filter(id => id !== car.id);
@@ -180,7 +182,7 @@
         function openSettings() { document.getElementById('modal-settings').classList.add('active'); }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
         function saveSettings() { state.name = document.getElementById('name-input').value; save(); location.reload(); }
-        function save() { localStorage.setItem('fh_v7_state', JSON.stringify(state)); }
+        function save() { localStorage.setItem('fh_v8_state', JSON.stringify(state)); }
     </script>
 </body>
 </html>
