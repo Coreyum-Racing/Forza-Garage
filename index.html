@@ -10,22 +10,28 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* --- BACKGROUND SYSTEM --- */
-        #master-bg { position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center; filter: brightness(0.4); transition: 1s ease-in-out; }
+        /* --- BACKGROUND SYSTEM (RELIABLE LINKS) --- */
+        #master-bg { 
+            position: fixed; inset: 0; z-index: -1; 
+            background-size: cover; background-position: center; 
+            filter: brightness(0.4) contrast(1.2); 
+            transition: background-image 1s ease-in-out;
+            background-color: #111;
+        }
         
-        /* --- HEADER & NAVIGATION --- */
+        /* --- HEADER --- */
         .header { padding: 15px; background: rgba(0,0,0,0.85); border-bottom: 3px solid var(--fh-pink); z-index: 1001; position: relative; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .game-selector { background: #222; padding: 8px 15px; border: 1px solid #444; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 900; }
-        .user-title { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; letter-spacing: 1px; }
+        .user-title { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; }
         .gear-btn { font-size: 1.6rem; cursor: pointer; }
 
-        /* --- SEARCH & SORT BAR --- */
+        /* --- SEARCH & SORT --- */
         .controls { display: flex; padding: 10px 15px; gap: 10px; background: rgba(0,0,0,0.5); border-bottom: 1px solid #333; }
-        input#search { flex: 1; padding: 12px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; }
+        input#search { flex: 1; padding: 12px; background: #111; border: 1px solid #444; color: white; }
         select#sort { padding: 10px; background: #333; color: white; border: none; font-family: 'Oswald'; }
 
-        /* --- THE LIST --- */
+        /* --- LIST --- */
         .list-container { height: 75vh; overflow-y: auto; padding: 10px 15px 120px; }
         .car-card { 
             background: rgba(255,255,255,0.05); margin-bottom: 6px; padding: 15px; 
@@ -33,29 +39,18 @@
             transition: 0.3s; opacity: 0.4; filter: grayscale(1);
         }
         .car-card.owned { opacity: 1; filter: grayscale(0); border-left-color: var(--fh-pink); background: rgba(255,45,85,0.15); }
-        .pi-badge { background: #555; padding: 4px 8px; font-weight: 900; font-size: 0.75rem; min-width: 50px; text-align: center; margin-right: 15px; color: white; }
-        .car-info { flex: 1; }
-        .car-info b { font-size: 0.95rem; text-transform: uppercase; }
-        .car-info span { display: block; font-size: 0.7rem; color: #aaa; margin-top: 3px; }
-
-        /* --- PLUS BUTTON --- */
-        #plus-btn { position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; background: var(--fh-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 900; box-shadow: 0 0 25px rgba(255,45,85,0.5); z-index: 1002; cursor: pointer; }
+        .pi-badge { background: #555; padding: 4px 8px; font-weight: 900; font-size: 0.75rem; min-width: 50px; text-align: center; margin-right: 15px; }
 
         /* --- ANIMATIONS --- */
         #anim-layer { position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden; }
         .pinata { position: absolute; font-size: 10rem; animation: p-dance 3s linear forwards; top: 35%; left: -250px; }
-        @keyframes p-dance { 0% { left: -250px; transform: rotate(0deg); } 50% { transform: rotate(20deg) translateY(-40px); } 100% { left: 110vw; transform: rotate(45deg); } }
+        @keyframes p-dance { 0% { left: -250px; } 100% { left: 110vw; transform: rotate(45deg); } }
         .leaf { position: absolute; font-size: 5rem; animation: l-drift 6s ease-in-out forwards; top: -100px; }
-        @keyframes l-drift { to { top: 110vh; transform: translateX(150px) rotate(1080deg); } }
-        .rain-overlay { position: fixed; inset: 0; background: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 100% 4px; animation: r-fall 0.2s linear infinite; pointer-events: none; opacity: 0.2; }
-        @keyframes r-fall { to { transform: translateY(4px); } }
+        @keyframes l-drift { to { top: 110vh; transform: rotate(1080deg); } }
 
-        /* --- NESTED MODALS --- */
+        /* --- MODALS --- */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; display: none; flex-direction: column; padding: 30px 20px; overflow-y: auto; }
         .modal.active { display: flex; }
-        .accordion-btn { background: #222; padding: 20px; margin-bottom: 10px; font-family: 'Oswald'; text-align: left; border: 1px solid #444; width: 100%; color: white; display: flex; justify-content: space-between; }
-        .dlc-content { padding: 10px 20px; background: #111; display: none; margin-bottom: 15px; }
-        .close-icon { position: absolute; top: 20px; right: 20px; font-size: 2rem; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -76,15 +71,16 @@
             <div style="padding:15px 30px; border-bottom:1px solid #333" onclick="swapGame('FH5')">FH5</div>
             <div style="padding:15px 30px;" onclick="swapGame('FH6')">FH6</div>
         </div>
-        <div style="text-align:center; font-size:0.75rem; color:var(--fh-yellow); font-weight:900;">
-            TOTAL COLLECTED: <span id="count-ui">0 / 20</span>
+        <div style="text-align:center; font-size:0.75rem; color:var(--fh-yellow);">
+            COLLECTED: <span id="count-ui">0 / 20</span>
         </div>
     </div>
 
     <div class="controls">
-        <input type="text" id="search" placeholder="Filter Manufacturer or Name..." oninput="updateList()">
+        <input type="text" id="search" placeholder="Filter by Name or Make..." oninput="updateList()">
         <select id="sort" onchange="updateList()">
             <option value="name">NAME (A-Z)</option>
+            <option value="make">MANUFACTURER</option>
             <option value="pi-desc">PI (HIGH-LOW)</option>
             <option value="pi-asc">PI (LOW-HIGH)</option>
             <option value="class">CLASS</option>
@@ -93,64 +89,45 @@
     </div>
 
     <div class="list-container" id="car-list"></div>
-    <div id="plus-btn" onclick="alert('Proof-Check Camera & Manual Input Coming in Next Patch!')">+</div>
 
     <div id="modal-settings" class="modal">
-        <div class="close-icon" onclick="closeModals()">X</div>
-        <h1 style="font-family:'Oswald'; color:var(--fh-yellow);">SETTINGS</h1>
-        
-        <label>EDIT USERNAME</label>
-        <input type="text" id="name-input" style="width:100%; padding:15px; background:#111; color:white; border:1px solid #333; margin:10px 0;">
-
-        <button class="accordion-btn" onclick="toggleDLC()">MANAGE DLC CONTENT <span>▼</span></button>
-        <div id="dlc-menu" class="dlc-content">
-            <h4>FORZA HORIZON 4</h4>
-            <label><input type="checkbox"> Formula Drift Pack</label><br>
-            <label><input type="checkbox"> LEGO Speed Champions</label><br>
-            <h4>FORZA HORIZON 5</h4>
-            <label><input type="checkbox"> Hot Wheels Expansion</label><br>
-            <label><input type="checkbox"> Rally Adventure</label><br>
-            <label><input type="checkbox"> Car Pass</label><br>
-            <h4>FORZA HORIZON 6</h4>
-            <label><input type="checkbox"> Launch Car Pack (Pre-Order)</label>
-        </div>
-
-        <button onclick="saveSettings()" style="padding:20px; background:var(--fh-pink); color:white; border:none; margin-top:auto; font-weight:900;">SAVE & REFRESH</button>
+        <div style="text-align:right; font-size:2rem" onclick="closeModals()">X</div>
+        <h1 style="font-family:'Oswald'">SETTINGS</h1>
+        <label>EDIT NAME</label>
+        <input type="text" id="name-input" style="width:100%; padding:15px; margin:10px 0;">
+        <button onclick="saveSettings()" style="padding:20px; background:var(--fh-pink); border:none; color:white; font-weight:900;">SAVE</button>
     </div>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('fh_v5_state')) || { 
-            name: "", game: 'FH5', owned: [], sort: 'name' 
+        let state = JSON.parse(localStorage.getItem('fh_v6_state')) || { 
+            name: "", game: 'FH5', owned: [] 
         };
 
         const carFleet = [
-            { id: 1, name: "2021 Porsche 911 GT3", make: "Porsche", pi: 900, class: "S1", year: 2021, type: "Modern Supercar" },
-            { id: 2, name: "1969 Dodge Charger R/T", make: "Dodge", pi: 450, class: "C", year: 1969, type: "Classic Muscle" },
-            { id: 3, name: "2020 Ferrari F8 Tributo", make: "Ferrari", pi: 885, class: "S1", year: 2020, type: "Supercar" },
-            { id: 4, name: "1997 Toyota Supra RZ", make: "Toyota", pi: 620, class: "B", year: 1997, type: "JDM" },
-            { id: 5, name: "2021 Mercedes-AMG One", make: "Mercedes-AMG", pi: 927, class: "S2", year: 2021, type: "Hypercar" },
-            { id: 6, name: "1973 BMW 2002 Turbo", make: "BMW", pi: 380, class: "D", year: 1973, type: "Classic" },
-            { id: 7, name: "2019 Rimac Concept Two", make: "Rimac", pi: 998, class: "S2", year: 2019, type: "Electric" },
-            { id: 8, name: "1992 Ford Escort RS Cosworth", make: "Ford", pi: 550, class: "B", year: 1992, type: "Rally" },
-            { id: 9, name: "2015 Lamborghini Huracan LP610-4", make: "Lamborghini", pi: 820, class: "S1", year: 2015, type: "Supercar" },
-            { id: 10, name: "2023 GMC Hummer EV", make: "GMC", pi: 400, class: "C", year: 2023, type: "Offroad" },
-            { id: 11, name: "2018 Bugatti Chiron", make: "Bugatti", pi: 999, class: "X", year: 2018, type: "Hypercar" },
-            { id: 12, name: "1965 Shelby Cobra 427 S/C", make: "Shelby", pi: 720, class: "A", year: 1965, type: "Classic" },
-            { id: 13, name: "2022 Rivian R1T", make: "Rivian", pi: 510, class: "B", year: 2022, type: "Offroad" },
-            { id: 14, name: "1998 Nissan Silvia K's", make: "Nissan", pi: 490, class: "C", year: 1998, type: "Drift" },
-            { id: 15, name: "2017 Aston Martin Vulcan", make: "Aston Martin", pi: 980, class: "S2", year: 2017, type: "Track Toy" },
-            { id: 16, name: "1987 Buick Regal GNX", make: "Buick", pi: 410, class: "C", year: 1987, type: "Muscle" },
-            { id: 17, name: "2010 Lexus LFA", make: "Lexus", pi: 810, class: "S1", year: 2010, type: "Supercar" },
-            { id: 18, name: "2021 Hoonigan Ford Bronco", make: "Hoonigan", pi: 800, class: "A", year: 2021, type: "Offroad" },
-            { id: 19, name: "1957 Chevrolet Bel Air", make: "Chevrolet", pi: 200, class: "D", year: 1957, type: "Classic" },
-            { id: 20, name: "2024 Lotus Evija", make: "Lotus", pi: 990, class: "S2", year: 2024, type: "Electric" }
+            { id: 1, name: "911 GT3", make: "Porsche", pi: 900, class: "S1", year: 2021 },
+            { id: 2, name: "Charger R/T", make: "Dodge", pi: 450, class: "C", year: 1969 },
+            { id: 3, name: "F8 Tributo", make: "Ferrari", pi: 885, class: "S1", year: 2020 },
+            { id: 4, name: "Supra RZ", make: "Toyota", pi: 620, class: "B", year: 1997 },
+            { id: 5, name: "AMG One", make: "Mercedes-AMG", pi: 927, class: "S2", year: 2021 },
+            { id: 6, name: "2002 Turbo", make: "BMW", pi: 380, class: "D", year: 1973 },
+            { id: 7, name: "Concept Two", make: "Rimac", pi: 998, class: "S2", year: 2019 },
+            { id: 8, name: "Escort RS", make: "Ford", pi: 550, class: "B", year: 1992 },
+            { id: 9, name: "Huracan", make: "Lamborghini", pi: 820, class: "S1", year: 2015 },
+            { id: 10, name: "Hummer EV", make: "GMC", pi: 400, class: "C", year: 2023 },
+            { id: 11, name: "Chiron", make: "Bugatti", pi: 999, class: "X", year: 2018 },
+            { id: 12, name: "Cobra 427", make: "Shelby", pi: 720, class: "A", year: 1965 },
+            { id: 13, name: "R1T", make: "Rivian", pi: 510, class: "B", year: 2022 },
+            { id: 14, name: "Silvia K's", make: "Nissan", pi: 490, class: "C", year: 1998 },
+            { id: 15, name: "Vulcan", make: "Aston Martin", pi: 980, class: "S2", year: 2017 },
+            { id: 16, name: "Regal GNX", make: "Buick", pi: 410, class: "C", year: 1987 },
+            { id: 17, name: "LFA", make: "Lexus", pi: 810, class: "S1", year: 2010 },
+            { id: 18, name: "Ford Bronco", make: "Hoonigan", pi: 800, class: "A", year: 2021 },
+            { id: 19, name: "Bel Air", make: "Chevrolet", pi: 200, class: "D", year: 1957 },
+            { id: 20, name: "Evija", make: "Lotus", pi: 990, class: "S2", year: 2024 }
         ];
 
         window.onload = () => {
-            if(!state.name) {
-                state.name = prompt("WELCOME DRIVER. ENTER YOUR GAMERTAG:") || "Collector";
-                save();
-            }
+            if(!state.name) { state.name = prompt("ENTER GAMERTAG:") || "Driver"; save(); }
             document.getElementById('name-display').innerText = state.name.toUpperCase();
             swapGame(state.game);
         };
@@ -160,35 +137,17 @@
             document.getElementById('game-name').innerText = g;
             document.getElementById('game-pop').style.display = 'none';
             
+            // USING DYNAMIC PICSUM SERVICES FOR STABILITY
             const bgs = {
-                FH4: 'https://i.imgur.com/3N8pL9s.jpg', 
-                FH5: 'https://i.imgur.com/R3S0kX9.jpg', 
-                FH6: 'https://i.imgur.com/2Yy5vX2.jpg'
+                FH4: 'https://picsum.photos/id/514/1200/800', 
+                FH5: 'https://picsum.photos/id/1071/1200/800', 
+                FH6: 'https://picsum.photos/id/136/1200/800'
             };
             document.getElementById('master-bg').style.backgroundImage = `url('${bgs[g]}')`;
             
             runAnimations(g);
             updateList();
             save();
-        }
-
-        function runAnimations(g) {
-            const layer = document.getElementById('anim-layer');
-            layer.innerHTML = '';
-            if(g === 'FH5') {
-                for(let i=0; i<2; i++) {
-                    let p = document.createElement('div'); p.className = 'pinata'; p.innerText = '🪅';
-                    p.style.animationDelay = (i * 0.7) + "s"; layer.appendChild(p);
-                }
-            } else if(g === 'FH4') {
-                let rain = document.createElement('div'); rain.className = 'rain-overlay'; layer.appendChild(rain);
-                for(let i=0; i<3; i++) {
-                    let l = document.createElement('div'); l.className = 'leaf'; l.innerText = '🍂';
-                    l.style.left = (Math.random() * 80) + "vw"; l.style.animationDelay = (i * 1.5) + "s";
-                    layer.appendChild(l);
-                }
-            }
-            setTimeout(() => { if(g !== 'FH4') layer.innerHTML = ''; }, 4500);
         }
 
         function updateList() {
@@ -202,6 +161,7 @@
             if(sortVal === 'pi-desc') filtered.sort((a,b) => b.pi - a.pi);
             if(sortVal === 'pi-asc') filtered.sort((a,b) => a.pi - b.pi);
             if(sortVal === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+            if(sortVal === 'make') filtered.sort((a,b) => a.make.localeCompare(b.make));
             if(sortVal === 'class') filtered.sort((a,b) => a.class.localeCompare(b.class));
             if(sortVal === 'year') filtered.sort((a,b) => b.year - a.year);
 
@@ -209,13 +169,7 @@
                 const owned = state.owned.includes(car.id);
                 const card = document.createElement('div');
                 card.className = `car-card ${owned ? 'owned' : ''}`;
-                card.innerHTML = `
-                    <div class="pi-badge">${car.class} ${car.pi}</div>
-                    <div class="car-info">
-                        <b>${car.name}</b>
-                        <span>${car.type} | ${car.year}</span>
-                    </div>
-                `;
+                card.innerHTML = `<div class="pi-badge">${car.class} ${car.pi}</div><div><b>${car.make}</b> ${car.name}</div>`;
                 card.onclick = () => {
                     if(!owned) state.owned.push(car.id);
                     else state.owned = state.owned.filter(id => id !== car.id);
@@ -226,21 +180,27 @@
             document.getElementById('count-ui').innerText = `${state.owned.length} / ${carFleet.length}`;
         }
 
-        function toggleDLC() {
-            const m = document.getElementById('dlc-menu');
-            m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+        function runAnimations(g) {
+            const layer = document.getElementById('anim-layer');
+            layer.innerHTML = '';
+            if(g === 'FH5') {
+                for(let i=0; i<2; i++) {
+                    let p = document.createElement('div'); p.className = 'pinata'; p.innerText = '🪅';
+                    p.style.animationDelay = (i * 0.7) + "s"; layer.appendChild(p);
+                }
+            } else if(g === 'FH4') {
+                for(let i=0; i<3; i++) {
+                    let l = document.createElement('div'); l.className = 'leaf'; l.innerText = '🍂';
+                    l.style.left = (Math.random() * 80) + "vw"; l.style.animationDelay = (i * 1.5) + "s";
+                    layer.appendChild(l);
+                }
+            }
         }
 
-        function openSettings() { 
-            document.getElementById('modal-settings').classList.add('active'); 
-            document.getElementById('name-input').value = state.name;
-        }
+        function openSettings() { document.getElementById('modal-settings').classList.add('active'); }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
-        function saveSettings() {
-            state.name = document.getElementById('name-input').value;
-            save(); location.reload();
-        }
-        function save() { localStorage.setItem('fh_v5_state', JSON.stringify(state)); }
+        function saveSettings() { state.name = document.getElementById('name-input').value; save(); location.reload(); }
+        function save() { localStorage.setItem('fh_v6_state', JSON.stringify(state)); }
     </script>
 </body>
 </html>
