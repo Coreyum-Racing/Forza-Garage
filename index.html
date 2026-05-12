@@ -3,35 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forza Foundation | V14</title>
+    <title>Forza Master | V15</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #0a0a0c; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* --- THE PORSCHE CHECK --- */
+        /* --- DYNAMIC BACKGROUND SYSTEM --- */
         #master-bg { 
             position: fixed; 
             inset: 0; 
             z-index: -1; 
-            background-image: url('IMG_4135.png'), url('IMG_4135.PNG'); /* Covers both lower and uppercase */
             background-size: cover; 
             background-position: center; 
-            filter: brightness(0.7); /* Lightened from 0.4 to 0.7 so the photo pops */
-            transition: 1s; 
+            filter: brightness(0.5); 
+            transition: 1s ease-in-out; 
         }
 
-        /* --- UI OVERLAY --- */
-        .header { padding: 15px; background: rgba(0,0,0,0.8); border-bottom: 3px solid var(--fh-pink); z-index: 1001; position: relative; }
+        /* --- HEADER --- */
+        .header { padding: 15px; background: rgba(0,0,0,0.85); border-bottom: 3px solid var(--fh-pink); z-index: 1001; position: relative; }
         .top-row { display: flex; justify-content: space-between; align-items: center; }
-        .user-title { font-family: 'Oswald', sans-serif; font-size: 1.8rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; flex: 1; text-align: center; text-shadow: 2px 2px 5px black; }
-        .game-nav { background: #222; padding: 10px; border: 1px solid #444; font-weight: 900; }
+        .user-title { font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; flex: 1; text-align: center; }
+        .game-nav { background: #222; padding: 10px; border: 1px solid #444; font-weight: 900; cursor: pointer; }
 
-        .list-container { height: 75vh; overflow-y: auto; padding: 10px 15px 150px; }
-        .car-card { background: rgba(0,0,0,0.7); margin-bottom: 10px; padding: 20px; display: flex; align-items: center; border-left: 8px solid #444; backdrop-filter: blur(4px); border-radius: 4px; }
-        .car-card.owned { border-left-color: var(--fh-pink); background: rgba(255,45,85,0.3); }
-        .pi-badge { background: #333; padding: 8px; margin-right: 15px; font-weight: 900; min-width: 60px; text-align: center; border: 1px solid #555; }
+        /* --- CONTROLS & SEARCH --- */
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; background: rgba(0,0,0,0.7); }
+        input#search { grid-column: span 2; padding: 12px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; }
+        select { padding: 10px; background: #333; color: white; border: 1px solid #555; font-size: 0.8rem; }
+        
+        /* --- THE NEW CAR CARD --- */
+        .list-container { height: 65vh; overflow-y: auto; padding: 10px 15px 150px; }
+        .car-card { background: rgba(0,0,0,0.75); margin-bottom: 10px; padding: 15px; display: flex; flex-direction: column; border-left: 8px solid #444; backdrop-filter: blur(5px); border-radius: 4px; }
+        .car-card.owned { border-left-color: var(--fh-pink); background: rgba(255,45,85,0.2); }
+        
+        .car-row-1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .car-row-2 { display: flex; justify-content: space-between; font-size: 0.8rem; color: #aaa; }
+
+        .pi-box { display: flex; align-items: center; gap: 5px; }
+        .pi-badge { background: #444; padding: 4px 8px; font-weight: 900; color: white; min-width: 45px; text-align: center; border-radius: 2px; }
+        .class-badge { font-weight: 900; color: var(--fh-yellow); }
+        .value-text { color: #888; font-family: 'Oswald'; }
+
+        /* --- SETTINGS MODAL --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; display: none; flex-direction: column; padding: 30px 20px; overflow-y: auto; }
+        .modal.active { display: flex; }
+        .accordion { background: #222; color: white; cursor: pointer; padding: 15px; width: 100%; border: 1px solid #444; text-align: left; font-family: 'Oswald'; margin-top: 10px; display: flex; justify-content: space-between; }
+        .panel { padding: 15px; background: #111; display: none; border: 1px solid #333; border-top: none; }
+        .setting-input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -40,47 +59,162 @@
 
     <div class="header">
         <div class="top-row">
-            <div class="game-nav">▣ <span id="game-label">FH5</span></div>
-            <div class="user-title" id="name-display">COREYUM</div>
-            <div style="font-size:1.8rem;">⚙️</div>
+            <div class="game-nav" onclick="document.getElementById('game-pop').style.display='block'">▣ <span id="game-label">FH5</span></div>
+            <div class="user-title" id="name-display">DRIVER</div>
+            <div onclick="openSettings()" style="font-size:1.8rem; cursor:pointer;">⚙️</div>
         </div>
-        <div style="text-align:center; font-size:0.9rem; color:var(--fh-yellow); margin-top:5px; font-weight:900; letter-spacing: 1px;">
-            COLLECTION: <span id="stats">0 / 0</span>
+        <div id="game-pop" style="display:none; position:absolute; left:15px; top:65px; background:#222; border:1px solid #444; z-index:2001; width:120px;">
+            <div style="padding:15px; border-bottom:1px solid #333" onclick="swapGame('FH4')">FH4</div>
+            <div style="padding:15px; border-bottom:1px solid #333" onclick="swapGame('FH5')">FH5</div>
+            <div style="padding:15px" onclick="swapGame('FH6')">FH6</div>
         </div>
+        <div style="text-align:center; font-size:0.8rem; color:var(--fh-yellow); margin-top:5px; font-weight:900;">
+            GARAGE TOTAL: <span id="stats">0 / 0</span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="search" placeholder="Search make or model..." oninput="updateList()">
+        <select id="sort-main" onchange="updateList()">
+            <option value="make">Sort: Manufacturer</option>
+            <option value="pi">Sort: PI (High-Low)</option>
+            <option value="value">Sort: Value (High-Low)</option>
+        </select>
+        <select id="filter-class" onchange="updateList()">
+            <option value="all">Class: All</option>
+            <option value="S2">Class: S2</option>
+            <option value="S1">Class: S1</option>
+            <option value="A">Class: A</option>
+        </select>
     </div>
 
     <div class="list-container" id="car-list"></div>
 
+    <div id="modal-settings" class="modal">
+        <div style="text-align:right; font-size:2rem; cursor:pointer;" onclick="closeSettings()">X</div>
+        <h1 style="font-family:'Oswald'; color:var(--fh-pink);">GARAGE SETTINGS</h1>
+        
+        <label style="color:var(--fh-yellow); font-size:0.8rem;">DRIVER NAME:</label>
+        <input type="text" id="name-input" class="setting-input">
+
+        <div class="accordion" onclick="toggleAcc(this)">BACKGROUND IMAGES <span>▼</span></div>
+        <div class="panel">
+            <label style="font-size:0.7rem;">FH4 Background Filename:</label>
+            <input type="text" id="bg-fh4" class="setting-input" placeholder="e.g. image1.png">
+            <label style="font-size:0.7rem;">FH5 Background Filename:</label>
+            <input type="text" id="bg-fh5" class="setting-input" placeholder="e.g. image2.png">
+            <label style="font-size:0.7rem;">FH6 Background Filename:</label>
+            <input type="text" id="bg-fh6" class="setting-input" placeholder="e.g. image3.png">
+        </div>
+
+        <div class="accordion" onclick="toggleAcc(this)">EXPANSIONS / DLC <span>▼</span></div>
+        <div class="panel">
+            <label><input type="checkbox" class="dlc-check" data-dlc="FH4_LEGO"> LEGO Champions</label><br><br>
+            <label><input type="checkbox" class="dlc-check" data-dlc="FH5_HW"> Hot Wheels</label>
+        </div>
+
+        <button onclick="saveSettings()" style="margin-top:30px; padding:20px; background:var(--fh-pink); color:white; border:none; font-weight:900; width:100%;">APPLY UPDATES</button>
+    </div>
+
     <script>
-        let state = JSON.parse(localStorage.getItem('fh_v14_state')) || { name: "COREYUM", owned: [] };
-        const cars = [
-            { id: 1, name: "911 GT3", make: "Porsche", pi: 900 },
-            { id: 2, name: "Charger R/T", make: "Dodge", pi: 450 }
+        let state = JSON.parse(localStorage.getItem('fh_garage_v15')) || { 
+            name: "COREYUM", 
+            game: 'FH5', 
+            owned: [], 
+            dlcs: [],
+            bgs: { FH4: 'IMG_4135.png', FH5: 'IMG_4135.png', FH6: 'IMG_4135.png' }
+        };
+
+        // Example car database structure including Class and Value
+        const carDatabase = [
+            { id: 1, name: "911 GT3", make: "Porsche", pi: 900, class: "S1", value: 150000, dlc: null },
+            { id: 2, name: "911 GT2 RS", make: "Porsche", pi: 998, class: "S2", value: 450000, dlc: null },
+            { id: 3, name: "Aventador SVJ", make: "Lamborghini", pi: 980, class: "S2", value: 500000, dlc: null },
+            { id: 4, name: "Supra RZ", make: "Toyota", pi: 620, class: "A", value: 38000, dlc: null }
         ];
 
         window.onload = () => {
-            document.getElementById('name-display').innerText = state.name;
-            update();
+            document.getElementById('name-display').innerText = state.name.toUpperCase();
+            swapGame(state.game);
         };
 
-        function update() {
+        function swapGame(g) {
+            state.game = g;
+            document.getElementById('game-label').innerText = g;
+            document.getElementById('game-pop').style.display = 'none';
+            document.getElementById('master-bg').style.backgroundImage = `url('${state.bgs[g]}')`;
+            updateList();
+            save();
+        }
+
+        function updateList() {
             const list = document.getElementById('car-list');
+            const search = document.getElementById('search').value.toLowerCase();
+            const sortVal = document.getElementById('sort-main').value;
+            const classFilter = document.getElementById('filter-class').value;
+
             list.innerHTML = '';
-            cars.forEach(c => {
-                const isOwned = state.owned.includes(c.id);
+
+            let filtered = carDatabase.filter(c => {
+                const matchesSearch = c.name.toLowerCase().includes(search) || c.make.toLowerCase().includes(search);
+                const matchesClass = classFilter === 'all' || c.class === classFilter;
+                const matchesDLC = c.dlc === null || state.dlcs.includes(c.dlc);
+                return matchesSearch && matchesClass && matchesDLC;
+            });
+
+            if(sortVal === 'pi') filtered.sort((a,b) => b.pi - a.pi);
+            if(sortVal === 'value') filtered.sort((a,b) => b.value - a.value);
+            if(sortVal === 'make') filtered.sort((a,b) => a.make.localeCompare(b.make));
+
+            filtered.forEach(car => {
+                const isOwned = state.owned.includes(car.id);
                 const card = document.createElement('div');
                 card.className = `car-card ${isOwned ? 'owned' : ''}`;
-                card.innerHTML = `<div class="pi-badge">${c.pi}</div><div><b>${c.make}</b> ${c.name}</div>`;
+                card.innerHTML = `
+                    <div class="car-row-1">
+                        <div class="pi-box"><span class="class-badge">${car.class}</span> <span class="pi-badge">${car.pi}</span></div>
+                        <div style="font-weight:900;">${car.make}</div>
+                    </div>
+                    <div class="car-row-2">
+                        <span>${car.name}</span>
+                        <span class="value-text">${car.value.toLocaleString()} CR</span>
+                    </div>
+                `;
                 card.onclick = () => {
-                    if(!isOwned) state.owned.push(c.id);
-                    else state.owned = state.owned.filter(id => id !== c.id);
-                    localStorage.setItem('fh_v14_state', JSON.stringify(state));
-                    update();
+                    if(!isOwned) state.owned.push(car.id);
+                    else state.owned = state.owned.filter(id => id !== car.id);
+                    save(); updateList();
                 };
                 list.appendChild(card);
             });
-            document.getElementById('stats').innerText = `${state.owned.length} / ${cars.length}`;
+            document.getElementById('stats').innerText = `${state.owned.length} / ${filtered.length}`;
         }
+
+        function openSettings() {
+            document.getElementById('modal-settings').classList.add('active');
+            document.getElementById('name-input').value = state.name;
+            document.getElementById('bg-fh4').value = state.bgs.FH4;
+            document.getElementById('bg-fh5').value = state.bgs.FH5;
+            document.getElementById('bg-fh6').value = state.bgs.FH6;
+            document.querySelectorAll('.dlc-check').forEach(cb => cb.checked = state.dlcs.includes(cb.dataset.dlc));
+        }
+
+        function saveSettings() {
+            state.name = document.getElementById('name-input').value || state.name;
+            state.bgs.FH4 = document.getElementById('bg-fh4').value || 'IMG_4135.png';
+            state.bgs.FH5 = document.getElementById('bg-fh5').value || 'IMG_4135.png';
+            state.bgs.FH6 = document.getElementById('bg-fh6').value || 'IMG_4135.png';
+            state.dlcs = [];
+            document.querySelectorAll('.dlc-check:checked').forEach(cb => state.dlcs.push(cb.dataset.dlc));
+            save(); location.reload();
+        }
+
+        function toggleAcc(btn) {
+            let p = btn.nextElementSibling;
+            p.style.display = (p.style.display === "block") ? "none" : "block";
+        }
+        function closeSettings() { document.getElementById('modal-settings').classList.remove('active'); }
+        function save() { localStorage.setItem('fh_garage_v15', JSON.stringify(state)); }
     </script>
 </body>
 </html>
