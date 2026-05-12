@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forza Garage | V28 Animation Fix</title>
+    <title>Forza Garage | V29 Master Build</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #050505; }
@@ -12,30 +12,30 @@
 
         /* --- HORIZONTAL ANIMATIONS --- */
         #fx-layer { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; }
-        .huge-emoji { position: absolute; font-size: 8rem; top: 40%; }
+        .huge-emoji { position: absolute; font-size: 8rem; top: 40%; visibility: hidden; }
         
-        /* Animation Paths */
-        @keyframes blowRight { 0% { left: -20%; transform: rotate(0deg); } 100% { left: 120%; transform: rotate(360deg); } }
-        @keyframes blowLeft { 0% { right: -20%; transform: rotate(0deg); } 100% { right: 120%; transform: rotate(-360deg); } }
-        @keyframes danceRight { 0% { left: -20%; transform: translateY(0); } 25% { transform: translateY(-20px); } 50% { transform: translateY(0); } 75% { transform: translateY(-20px); } 100% { left: 120%; } }
+        @keyframes blowRight { 0% { left: -30%; transform: rotate(0deg); visibility: visible; } 100% { left: 130%; transform: rotate(360deg); visibility: visible; } }
+        @keyframes blowLeft { 0% { right: -30%; transform: rotate(0deg); visibility: visible; } 100% { right: 130%; transform: rotate(-360deg); visibility: visible; } }
+        @keyframes danceRight { 0% { left: -30%; transform: translateY(0); visibility: visible; } 25% { transform: translateY(-30px); } 50% { transform: translateY(0); } 75% { transform: translateY(-30px); } 100% { left: 130%; visibility: visible; } }
 
-        /* --- HEADER & NAVIGATION --- */
+        /* --- UI LAYOUT --- */
         .app-header { background: #000; border-bottom: 4px solid var(--fh-pink); padding: 15px; position: relative; z-index: 1000; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         
         .controls { display: flex; gap: 10px; padding: 0 5px; }
         #search-input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #151515; color: white; font-size: 16px; }
-        
-        /* Fixed Sort Button Interaction */
-        .sort-trigger { background: var(--fh-pink); border: none; border-radius: 10px; padding: 10px 20px; font-weight: 900; color: white; cursor: pointer; display: inline-block; min-width: 80px; }
+        .sort-trigger { background: var(--fh-pink); border: none; border-radius: 10px; padding: 10px 15px; font-weight: 900; color: white; cursor: pointer; }
 
-        .garage-scroll { height: calc(100vh - 160px); overflow-y: scroll; padding: 15px; }
+        .garage-scroll { height: calc(100vh - 170px); overflow-y: scroll; padding: 15px; }
         .car-item { background: #111; border-radius: 15px; padding: 20px; margin-bottom: 12px; border: 1px solid #222; position: relative; }
         .car-item.owned { border-left: 10px solid var(--fh-pink); background: #1a050a; }
-        .dots { position: absolute; right: 15px; top: 15px; font-size: 2rem; color: var(--fh-yellow); padding: 10px; z-index: 50; }
+        .dots { position: absolute; right: 15px; top: 15px; font-size: 2rem; color: var(--fh-yellow); padding: 5px; z-index: 50; }
+        .car-val { font-size: 0.8rem; opacity: 0.6; margin-top: 5px; }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 11000; display: none; flex-direction: column; padding: 40px 20px; }
-        .btn-action { width: 100%; padding: 20px; background: var(--fh-pink); border-radius: 12px; border: none; color: white; font-weight: 900; margin-top: 15px; font-size: 1.1rem; }
+        /* --- SETTINGS & MODALS --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 11000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #222; }
+        .btn-action { width: 100%; padding: 18px; background: var(--fh-pink); border-radius: 12px; border: none; color: white; font-weight: 900; margin-top: 15px; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -45,11 +45,11 @@
     <div class="app-header">
         <div class="top-nav">
             <select id="game-picker" onchange="changeGame(this.value)" style="background:#222; color:white; padding:10px; border-radius:8px; border:1px solid #444; font-weight:900;">
-                <option value="FH5">FH5</option>
                 <option value="FH4">FH4</option>
+                <option value="FH5" selected>FH5</option>
                 <option value="FH6">FH6</option>
             </select>
-            <div id="display-name" style="font-family:'Oswald'; color:var(--fh-yellow); font-style:italic; font-size: 1.2rem;">DRIVER</div>
+            <div id="display-name" style="font-family:'Oswald'; color:var(--fh-yellow); font-style:italic;">DRIVER</div>
             <div onclick="openSettings()" style="font-size:2rem; cursor:pointer;">⚙️</div>
         </div>
         <div class="controls">
@@ -68,27 +68,47 @@
 
     <div id="settings-modal" class="modal">
         <div style="text-align:right; font-size:2.5rem;" onclick="closeModals()">✕</div>
-        <h2 style="font-family:'Oswald'; color:var(--fh-pink);">SETTINGS</h2>
-        <button class="btn-action" style="background:#444;" onclick="localStorage.clear(); location.reload();">RESET DATA</button>
+        <h2 style="font-family:'Oswald'; color:var(--fh-pink); margin-bottom: 20px;">GARAGE SETTINGS</h2>
+        
+        <div class="setting-row">
+            <span>Driver Name</span>
+            <input type="text" id="set-name-input" onchange="updateName(this.value)" style="background:#222; color:white; border:1px solid #444; padding:8px; border-radius:5px; width: 50%;">
+        </div>
+
+        <div class="setting-row">
+            <span>FH4: LEGO Champions</span>
+            <input type="checkbox" id="set-dlc1" onchange="saveSettings()">
+        </div>
+
+        <div class="setting-row">
+            <span>FH5: Hot Wheels</span>
+            <input type="checkbox" id="set-dlc2" onchange="saveSettings()">
+        </div>
+
+        <button class="btn-action" style="background:#333; margin-top: 50px;" onclick="closeModals()">SAVE & EXIT</button>
+        <button class="btn-action" style="background:transparent; border: 1px solid #444; color: #888;" onclick="localStorage.clear(); location.reload();">RESET ALL DATA</button>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('fh_v28_save')) || { name:"Driver", game:"FH5", owned:[], sortMode: "AZ" };
+        let db = JSON.parse(localStorage.getItem('fh_v29_save')) || { name:"Coreyum", game:"FH5", owned:[], sortMode: "AZ", dlc1: true, dlc2: true };
+        
         const cars = [
-            {id:1, m:"Porsche", n:"911 GT3", p:900},
-            {id:2, m:"Toyota", n:"Supra RZ", p:620},
-            {id:3, m:"Dodge", n:"Charger R/T", p:450}
+            {id:1, m:"Porsche", n:"911 GT3", p:900, c:"S1", v:150000},
+            {id:2, m:"Toyota", n:"Supra RZ", p:620, c:"A", v:38000},
+            {id:3, m:"Dodge", n:"Charger R/T", p:450, c:"B", v:64000}
         ];
 
         window.onload = () => {
             document.getElementById('display-name').innerText = db.name.toUpperCase();
+            document.getElementById('set-name-input').value = db.name;
+            document.getElementById('set-dlc1').checked = db.dlc1;
+            document.getElementById('set-dlc2').checked = db.dlc2;
             render();
         };
 
         function render(f = cars) {
             const list = document.getElementById('car-list');
             list.innerHTML = '';
-            
             let sorted = [...f];
             if(db.sortMode === "PI") sorted.sort((a,b) => b.p - a.p);
             else sorted.sort((a,b) => a.m.localeCompare(b.m));
@@ -96,7 +116,7 @@
             sorted.forEach(c => {
                 const item = document.createElement('div');
                 item.className = `car-item ${db.owned.includes(c.id) ? 'owned' : ''}`;
-                item.innerHTML = `<div class="dots" onclick="openCar(${c.id})">⋮</div><b>${c.m} ${c.n}</b><br><span style="color:var(--fh-yellow)">PI ${c.p}</span>`;
+                item.innerHTML = `<div class="dots" onclick="openCar(${c.id})">⋮</div><b>${c.m} ${c.n}</b><br><span style="color:var(--fh-yellow)">${c.c} ${c.p}</span><div class="car-val">Auto Show: ${c.v.toLocaleString()} CR</div>`;
                 list.appendChild(item);
             });
         }
@@ -110,15 +130,14 @@
             db.sortMode = (db.sortMode === "AZ") ? "PI" : "AZ";
             document.getElementById('sort-btn').innerText = "SORT: " + db.sortMode;
             render();
-            localStorage.setItem('fh_v28_save', JSON.stringify(db));
+            saveSettings();
         }
 
         function changeGame(g) {
             db.game = g;
             const container = document.getElementById('fx-layer');
-            container.innerHTML = '';
+            container.innerHTML = ''; // Instantly clears stuck emojis
             
-            // Logic for the 2 Massive Emojis
             const emojis = g === 'FH4' ? ['🍂', '🍂'] : (g === 'FH5' ? ['🪅', '🪅'] : ['🌸', '🌸']);
             const anim = g === 'FH4' ? 'blowRight' : (g === 'FH5' ? 'danceRight' : 'blowLeft');
 
@@ -127,13 +146,19 @@
                 p.className = 'huge-emoji';
                 p.innerText = emoji;
                 p.style.animation = `${anim} 3s ease-in-out forwards`;
-                p.style.animationDelay = (i * 0.5) + 's';
-                p.style.top = (30 + (i * 20)) + '%'; // Spread them out vertically slightly
+                p.style.animationDelay = (i * 0.4) + 's';
+                p.style.top = (30 + (i * 20)) + '%';
                 container.appendChild(p);
-                setTimeout(() => p.remove(), 4000);
             });
-            
-            localStorage.setItem('fh_v28_save', JSON.stringify(db));
+            saveSettings();
+        }
+
+        function updateName(n) { db.name = n || "Driver"; document.getElementById('display-name').innerText = db.name.toUpperCase(); saveSettings(); }
+        
+        function saveSettings() {
+            db.dlc1 = document.getElementById('set-dlc1').checked;
+            db.dlc2 = document.getElementById('set-dlc2').checked;
+            localStorage.setItem('fh_v29_save', JSON.stringify(db));
         }
 
         function openCar(id) {
@@ -143,8 +168,7 @@
             document.getElementById('m-own').onclick = () => {
                 if(db.owned.includes(id)) db.owned = db.owned.filter(i => i !== id);
                 else db.owned.push(id);
-                localStorage.setItem('fh_v28_save', JSON.stringify(db));
-                render(); closeModals();
+                saveSettings(); render(); closeModals();
             };
             document.getElementById('car-modal').style.display = 'flex';
         }
