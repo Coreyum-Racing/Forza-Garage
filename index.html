@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forza Garage Master | V18</title>
+    <title>Forza Garage Master | V19</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #0a0a0c; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* --- BACKGROUND SYSTEM --- */
+        /* --- THE FIXED GITHUB BACKGROUND --- */
         #master-bg { 
             position: fixed; inset: 0; z-index: -1; 
-            background-image: url('IMG_4135.png'), url('IMG_4135.PNG');
+            background-image: url('IMG_4135.png'), url('./IMG_4135.png'), url('/Forza-Garage/IMG_4135.png');
             background-size: cover; background-position: center; 
             filter: brightness(0.5); transition: 1s ease-in-out; 
         }
@@ -29,7 +29,7 @@
         .user-title { font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; flex: 1; text-align: center; }
         .game-nav { background: #222; padding: 10px; border: 1px solid #444; font-weight: 900; cursor: pointer; min-width: 80px; text-align: center; }
 
-        /* --- CAR CARDS --- */
+        /* --- CAR CARDS (GREYED LOGIC) --- */
         .list-container { height: 65vh; overflow-y: auto; padding: 10px 15px 150px; }
         .car-card { background: rgba(30,30,30,0.8); margin-bottom: 12px; padding: 15px; border-left: 8px solid #444; backdrop-filter: blur(5px); transition: 0.3s; position: relative; filter: grayscale(1) opacity(0.5); }
         .car-card.owned { filter: grayscale(0) opacity(1); border-left-color: var(--fh-pink); background: rgba(0,0,0,0.75); }
@@ -81,7 +81,7 @@
     <div class="header">
         <div class="top-row">
             <div class="game-nav" onclick="document.getElementById('game-pop').style.display='block'">▣ <span id="game-label">FH5</span></div>
-            <div class="user-title" id="name-display">DRIVER</div>
+            <div class="user-title" id="name-display">COREYUM</div>
             <div style="font-size:1.8rem; cursor:pointer;" onclick="openSettings()">⚙️</div>
         </div>
         <div id="game-pop" style="display:none; position:absolute; left:15px; top:65px; background:#222; border:1px solid #444; z-index:2001; width:120px;">
@@ -127,15 +127,14 @@
     </div>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('fh_master_v18')) || { 
-            name: "", onboarding: true, firstTime: true, game: 'FH5', owned: [], dlcs: [],
+        let state = JSON.parse(localStorage.getItem('fh_master_v19')) || { 
+            name: "COREYUM", onboarding: true, firstTime: true, game: 'FH5', owned: [], dlcs: [],
             bgs: { FH4: 'IMG_4135.png', FH5: 'IMG_4135.png', FH6: 'IMG_4135.png' }
         };
 
         const carDatabase = [
             { id: 1, make: "Porsche", model: "911 GT3", pi: 900, class: "S1", value: "150,000" },
-            { id: 2, make: "Toyota", model: "Supra RZ", pi: 620, class: "A", value: "38,000" },
-            { id: 3, make: "Dodge", model: "Charger R/T", pi: 450, class: "B", value: "64,000" }
+            { id: 2, make: "Dodge", model: "Charger R/T", pi: 450, class: "B", value: "64,000" }
         ];
 
         let activeId = null;
@@ -203,7 +202,7 @@
         function toggleAcc(btn) { let p = btn.nextElementSibling; p.style.display = (p.style.display === "block") ? "none" : "block"; }
         function copySocial() { const car = carDatabase.find(c => c.id === activeId); navigator.clipboard.writeText(`Check out my ${car.make} ${car.model} in my garage!`); alert("Link Copied!"); }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
-        function save() { localStorage.setItem('fh_master_v18', JSON.stringify(state)); }
+        function save() { localStorage.setItem('fh_master_v19', JSON.stringify(state)); }
     </script>
 </body>
 </html>
