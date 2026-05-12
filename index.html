@@ -3,169 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forza Garage V20 | Adaptive Edition</title>
+    <title>Forza Garage V21 | Full Fix</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #0a0a0c; --glass: rgba(255, 255, 255, 0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* --- ADAPTIVE BACKGROUND --- */
-        #master-bg { position: fixed; inset: 0; z-index: -1; background-image: url('IMG_4135.png'); background-size: cover; background-position: center; filter: brightness(0.5); transition: 1.5s ease-in-out; }
+        /* --- THE NUCLEAR BACKGROUND FIX --- */
+        #master-bg { 
+            position: fixed; inset: 0; z-index: -1; 
+            background-image: url('https://coreyum-racing.github.io/Forza-Garage/IMG_4135.png'), url('IMG_4135.png'); 
+            background-size: cover; background-position: center; 
+            filter: brightness(0.4); transition: 1.5s; 
+        }
         
-        /* --- ENVIRONMENTAL ANIMATIONS --- */
-        #fx-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 4000; }
-
-        /* --- FORZA GREETING --- */
-        .overlay-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-        .forza-flash { font-family: 'Oswald', sans-serif; font-size: 3.5rem; font-style: italic; text-transform: uppercase; transform: skewX(-10deg); animation: flashIn 2s ease-out forwards; }
-        @keyframes flashIn { 0% { opacity: 0; transform: scale(0.8) skewX(-10deg); } 30% { opacity: 1; transform: scale(1) skewX(-10deg); color: var(--fh-yellow); } 100% { opacity: 0; transform: scale(1.1) skewX(-10deg); } }
-
         /* --- HEADER & SEARCH (ADAPTIVE GLASS) --- */
-        .header { padding: 15px; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); border-bottom: 3px solid var(--fh-pink); position: relative; z-index: 1001; }
+        .header { padding: 15px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-bottom: 3px solid var(--fh-pink); position: relative; z-index: 1001; }
         .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .user-title { font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; }
         
         .search-bar { width: 100%; display: flex; gap: 8px; margin-top: 10px; }
-        .search-input { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--glass); background: var(--glass); color: white; }
-        .sort-btn { padding: 10px; background: var(--fh-pink); border: none; border-radius: 12px; color: white; font-weight: 900; }
+        .search-input { flex: 1; padding: 12px; border-radius: 15px; border: 1px solid var(--glass); background: var(--glass); color: white; outline: none; }
+        .sort-btn { padding: 10px 15px; background: var(--fh-pink); border: none; border-radius: 12px; color: white; font-weight: 900; font-family: 'Oswald'; }
 
         /* --- CAR CARDS (ROUNDED GLASS) --- */
         .list-container { height: 65vh; overflow-y: auto; padding: 15px 15px 150px; }
-        .car-card { background: var(--glass); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); filter: grayscale(1) opacity(0.5); transition: 0.4s; }
-        .car-card.owned { filter: grayscale(0) opacity(1); border: 2px solid var(--fh-pink); }
+        .car-card { background: var(--glass); backdrop-filter: blur(15px); border-radius: 25px; margin-bottom: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; }
+        .car-card.owned { border: 2px solid var(--fh-pink); background: rgba(0,0,0,0.6); }
 
-        /* --- TUTORIAL HIGHLIGHT --- */
-        .tutor-highlight { border: 4px solid var(--fh-yellow) !important; box-shadow: 0 0 20px var(--fh-yellow); z-index: 6000; }
-        
+        /* --- TUTORIAL OVERLAY --- */
+        #tutor-box { position: fixed; bottom: 120px; left: 20px; right: 20px; background: var(--fh-yellow); color: black; padding: 20px; border-radius: 20px; z-index: 10000; font-weight: 900; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .tutor-highlight { z-index: 10001 !important; border: 5px solid var(--fh-yellow) !important; position: relative; }
+        .tutor-dim { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: none; }
+
         /* --- MODALS --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9000; display: none; flex-direction: column; padding: 40px 20px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 11000; display: none; flex-direction: column; padding: 40px 20px; }
         .modal.active { display: flex; }
-        .btn-main { width: 100%; padding: 20px; background: var(--fh-pink); border-radius: 15px; border: none; color: white; font-weight: 900; margin-top: 15px; }
+        .btn-main { width: 100%; padding: 20px; background: var(--fh-pink); border-radius: 15px; border: none; color: white; font-weight: 900; margin-top: 15px; text-transform: uppercase; }
+        .overlay-screen { position: fixed; inset: 0; background: black; z-index: 12000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="master-bg"></div>
-    <canvas id="fx-canvas"></canvas>
+    <div id="tutor-dim" class="tutor-dim"></div>
+    <div id="tutor-box">
+        <p id="tutor-text"></p>
+        <button onclick="advanceTutorial()" class="btn-main" style="background:black; padding:10px;">NEXT STEP</button>
+    </div>
 
     <div id="step-name" class="overlay-screen">
-        <h1 style="font-family:'Oswald'; color:var(--fh-yellow);">FORZA GARAGE</h1>
-        <input type="text" id="input-name" class="search-input" style="width:80%;" placeholder="DRIVER NAME">
-        <button onclick="nextStartup(1)" class="btn-main" style="width:80%;">START ENGINE</button>
+        <h1 style="font-family:'Oswald'; color:var(--fh-yellow); font-size: 3rem;">FORZA GARAGE</h1>
+        <input type="text" id="input-name" class="search-input" style="width:90%; border:2px solid var(--fh-yellow);" placeholder="ENTER DRIVER NAME">
+        <button onclick="nextStartup(1)" class="btn-main" style="width:90%;">IGNITION</button>
     </div>
 
     <div id="step-dlc" class="overlay-screen">
-        <h2 style="font-family:'Oswald';">OWNED EXPANSIONS?</h2>
-        <div style="text-align:left; margin:20px 0;">
-            <label><input type="checkbox" id="check-lego"> FH4: LEGO Champions</label><br><br>
-            <label><input type="checkbox" id="check-hw"> FH5: Hot Wheels</label>
+        <h2 style="font-family:'Oswald';">SELECT EXPANSIONS</h2>
+        <div style="text-align:left; font-weight: 900; font-size: 1.2rem;">
+            <label><input type="checkbox" id="check-lego" style="transform:scale(1.5);"> FH4: LEGO Champions</label><br><br>
+            <label><input type="checkbox" id="check-hw" style="transform:scale(1.5);"> FH5: Hot Wheels</label>
         </div>
         <button onclick="nextStartup(2)" class="btn-main">CONTINUE</button>
     </div>
 
-    <div id="step-alert" class="overlay-screen">
-        <div style="background:#222; border:3px solid var(--fh-pink); border-radius:20px; padding:30px; position:relative;">
-            <div style="position:absolute; right:15px; top:15px; color:var(--fh-pink); font-weight:900; cursor:pointer;" onclick="startTutorialFlow()">X</div>
-            <h3 style="color:var(--fh-yellow);">COLLECTION NOTE</h3>
-            <p>This list defaults to the BASE GAME. DLCs can be toggled in settings.</p>
-        </div>
-    </div>
-
-    <div id="step-tutor" class="overlay-screen">
-        <h2 style="font-family:'Oswald';">WANT A TOUR?</h2>
-        <button onclick="runTutorial()" class="btn-main">YES, SHOW ME AROUND</button>
-        <button onclick="finishOnboarding()" class="btn-main" style="background:#444;">SKIP FOR NOW</button>
-    </div>
-
     <div class="header">
         <div class="top-row">
-            <div id="tutor-game" class="sort-btn" style="background:#222; border:1px solid #444;" onclick="toggleGameMenu()">▣ <span id="game-label">FH5</span></div>
+            <div id="tutor-game-btn" class="sort-btn" style="background:#222; border:1px solid #444;" onclick="toggleGameMenu()">▣ <span id="game-label">FH5</span></div>
             <div class="user-title" id="name-display">COREYUM</div>
-            <div id="tutor-settings" style="font-size:1.8rem; cursor:pointer;" onclick="openSettings()">⚙️</div>
+            <div id="tutor-settings-btn" style="font-size:1.8rem; cursor:pointer;" onclick="openSettings()">⚙️</div>
         </div>
-        <div class="search-bar" id="tutor-search">
-            <input type="text" class="search-input" placeholder="Search Cars..." oninput="handleSearch(this.value)">
+        <div class="search-bar" id="tutor-search-bar">
+            <input type="text" class="search-input" placeholder="Search Garage..." oninput="handleSearch(this.value)">
             <button class="sort-btn" onclick="toggleSort()">SORT ▼</button>
-        </div>
-        <div id="game-pop" style="display:none; position:absolute; left:15px; top:110px; background:rgba(0,0,0,0.9); border-radius:15px; z-index:2005;">
-            <div style="padding:15px; border-bottom:1px solid #333" onclick="swapGame('FH4')">FH4 (Autumn)</div>
-            <div style="padding:15px; border-bottom:1px solid #333" onclick="swapGame('FH5')">FH5 (Piñata)</div>
-            <div style="padding:15px" onclick="swapGame('FH6')">FH6 (Neon)</div>
         </div>
     </div>
 
     <div class="list-container" id="car-list"></div>
 
+    <div id="modal-car" class="modal">
+        <div style="text-align:right; font-size:2rem; font-weight: 900;" onclick="closeModals()">✕</div>
+        <h2 id="modal-car-title" style="font-family:'Oswald'; font-size: 2rem; border-bottom: 4px solid var(--fh-pink);">CAR NAME</h2>
+        <p id="modal-car-info" style="font-size: 1.2rem; color: var(--fh-yellow);"></p>
+        <button class="btn-main" onclick="toggleOwnership()">ADD TO COLLECTION</button>
+        <button class="btn-main" style="background:#222; border: 1px solid #444;" onclick="copySocial()">SHARE ON SOCIAL</button>
+    </div>
+
     <script>
-        let state = JSON.parse(localStorage.getItem('fh_v20')) || { 
-            name: "", onboarding: true, firstTime: true, game: 'FH5', owned: [], dlcs: [],
-            bgs: { FH4: 'IMG_4135.png', FH5: 'IMG_4135.png', FH6: 'IMG_4135.png' }
+        let state = JSON.parse(localStorage.getItem('fh_v21_save')) || { 
+            name: "", onboarding: true, game: 'FH5', owned: [], tutorStep: 0 
         };
 
-        const carDatabase = [
-            { id: 1, make: "Porsche", model: "911 GT3", pi: 900, class: "S1", value: 150000, year: 2021 },
-            { id: 2, make: "Dodge", model: "Charger R/T", pi: 450, class: "B", value: 64000, year: 1969 }
+        const cars = [
+            { id: 1, make: "Porsche", model: "911 GT3", pi: 900, class: "S1", value: "150,000" },
+            { id: 2, make: "Dodge", model: "Charger R/T", pi: 450, class: "B", value: "64,000" },
+            { id: 3, make: "Toyota", model: "Supra RZ", pi: 620, class: "A", value: "38,000" }
         ];
 
+        let activeCarId = null;
+
+        window.onload = () => {
+            if(state.onboarding) { document.getElementById('step-name').style.display = 'flex'; }
+            else { init(); }
+        };
+
         function nextStartup(s) {
-            if(s === 1) { state.name = document.getElementById('input-name').value || "Driver"; document.getElementById('step-name').style.display = 'none'; document.getElementById('step-dlc').style.display = 'flex'; }
-            if(s === 2) { document.getElementById('step-dlc').style.display = 'none'; document.getElementById('step-alert').style.display = 'flex'; }
+            if(s === 1) { 
+                state.name = document.getElementById('input-name').value || "Driver"; 
+                document.getElementById('step-name').style.display = 'none'; 
+                document.getElementById('step-dlc').style.display = 'flex'; 
+            }
+            if(s === 2) {
+                document.getElementById('step-dlc').style.display = 'none';
+                state.onboarding = false;
+                save();
+                init();
+                startTutorial();
+            }
         }
 
-        function startTutorialFlow() {
-            document.getElementById('step-alert').style.display = 'none';
-            document.getElementById('step-tutor').style.display = 'flex';
+        function init() {
+            document.getElementById('name-display').innerText = state.name.toUpperCase();
+            renderCars();
         }
 
-        function runTutorial() {
-            document.getElementById('step-tutor').style.display = 'none';
-            // Logic to highlight elements one by one
-            alert("This is your Game Switcher. Click it to change installments!");
-            document.getElementById('tutor-game').classList.add('tutor-highlight');
-            setTimeout(() => {
-                document.getElementById('tutor-game').classList.remove('tutor-highlight');
-                alert("Use this bar to search or sort your garage just like in Forza!");
-                document.getElementById('tutor-search').classList.add('tutor-highlight');
-                setTimeout(() => {
-                    document.getElementById('tutor-search').classList.remove('tutor-highlight');
-                    finishOnboarding();
-                }, 2000);
-            }, 2000);
-        }
-
-        function finishOnboarding() {
-            state.onboarding = false; save();
-            document.querySelectorAll('.overlay-screen').forEach(s => s.style.display = 'none');
-            location.reload();
-        }
-
-        function swapGame(g) {
-            state.game = g;
-            document.getElementById('game-label').innerText = g;
-            triggerHugeAnimation(g);
-            updateList();
-        }
-
-        function triggerHugeAnimation(game) {
-            const canvas = document.getElementById('fx-canvas');
-            // Canvas logic for falling leaves (FH4) or Pinata confetti (FH5)
-            console.log("Triggering Huge " + game + " Animation");
-        }
-
-        function updateList() {
+        function renderCars() {
             const list = document.getElementById('car-list');
             list.innerHTML = '';
-            carDatabase.forEach(c => {
+            cars.forEach(c => {
+                const isOwned = state.owned.includes(c.id);
                 const card = document.createElement('div');
-                card.className = `car-card ${state.owned.includes(c.id) ? 'owned' : ''}`;
-                card.innerHTML = `<h3>${c.make} ${c.model}</h3><p>${c.class} ${c.pi}</p>`;
+                card.className = `car-card ${isOwned ? 'owned' : ''}`;
+                card.id = `car-card-${c.id}`;
+                card.onclick = () => openCar(c.id);
+                card.innerHTML = `
+                    <div style="font-weight:900; font-size:1.3rem;">${c.make} ${c.model}</div>
+                    <div style="color:var(--fh-yellow); font-weight:900; margin-top:5px;">${c.class} ${c.pi}</div>
+                    <div style="font-size:0.8rem; opacity:0.6; margin-top:5px;">${c.value} CR</div>
+                `;
                 list.appendChild(card);
             });
         }
 
-        function save() { localStorage.setItem('fh_v20', JSON.stringify(state)); }
-        window.onload = () => { if(state.onboarding) document.getElementById('step-name').style.display = 'flex'; else updateList(); };
+        /* --- TUTORIAL LOGIC --- */
+        const tutorSteps = [
+            { id: 'tutor-game-btn', text: "Tap here to switch between Forza Horizon 4, 5, and 6!" },
+            { id: 'tutor-search-bar', text: "Search for specific models or SORT by Class, PI, and Value." },
+            { id: 'car-card-1', text: "These are Car Blocks. Tap one to view details or add it to your collection." },
+            { id: 'tutor-settings-btn', text: "Finally, check Settings to reset the tutorial or change your background image!" }
+        ];
+
+        function startTutorial() {
+            state.tutorStep = 0;
+            document.getElementById('tutor-dim').style.display = 'block';
+            document.getElementById('tutor-box').style.display = 'block';
+            showStep();
+        }
+
+        function showStep() {
+            tutorSteps.forEach(s => document.getElementById(s.id)?.classList.remove('tutor-highlight'));
+            const step = tutorSteps[state.tutorStep];
+            document.getElementById(step.id).classList.add('tutor-highlight');
+            document.getElementById('tutor-text').innerText = step.text;
+        }
+
+        function advanceTutorial() {
+            state.tutorStep++;
+            if(state.tutorStep >= tutorSteps.length) {
+                document.getElementById('tutor-dim').style.display = 'none';
+                document.getElementById('tutor-box').style.display = 'none';
+                tutorSteps.forEach(s => document.getElementById(s.id).classList.remove('tutor-highlight'));
+            } else {
+                showStep();
+            }
+        }
+
+        function openCar(id) {
+            activeCarId = id;
+            const car = cars.find(c => c.id === id);
+            document.getElementById('modal-car-title').innerText = `${car.make} ${car.model}`;
+            document.getElementById('modal-car-info').innerText = `${car.class} ${car.pi} | ${car.value} CR`;
+            document.getElementById('modal-car').classList.add('active');
+        }
+
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
+        function save() { localStorage.setItem('fh_v21_save', JSON.stringify(state)); }
     </script>
 </body>
 </html>
