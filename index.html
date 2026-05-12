@@ -3,137 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forza Garage | V33 Festival</title>
+    <title>Forza Garage Community | V35</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #050505; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; width: 100vw; height: 100vh; }
 
-        /* --- HORIZON FESTIVAL GREETING --- */
-        #welcome-overlay { position: fixed; inset: 0; background: var(--bg-carbon); z-index: 20000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .festival-text { font-family: 'Oswald'; font-style: italic; font-size: 3rem; line-height: 1; color: var(--fh-pink); text-transform: uppercase; animation: zoomIn 0.5s ease-out; }
-        .festival-sub { font-weight: 900; letter-spacing: 2px; margin-top: 10px; color: var(--fh-yellow); }
+        /* --- ONBOARDING OVERLAY --- */
+        #welcome-overlay { position: fixed; inset: 0; background: var(--bg-carbon); z-index: 20000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 25px; }
+        .fest-title { font-family: 'Oswald'; font-style: italic; font-size: 3.5rem; color: var(--fh-pink); text-transform: uppercase; margin-bottom: 5px; animation: pulse 2s infinite; }
+        .fest-sub { font-weight: 900; letter-spacing: 2px; color: var(--fh-yellow); margin-bottom: 30px; }
+        .name-box { background: #111; border: 3px solid #333; padding: 18px; border-radius: 15px; width: 100%; max-width: 350px; color: white; font-size: 1.3rem; text-align: center; margin-bottom: 25px; font-family: 'Oswald'; outline: none; }
+        .name-box:focus { border-color: var(--fh-pink); }
 
-        @keyframes zoomIn { 0% { transform: scale(3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        /* --- ANIMATIONS & UI --- */
-        #fx-layer { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; }
-        .huge-emoji { position: absolute; font-size: 8rem; top: 40%; visibility: hidden; }
-        @keyframes blowRight { 0% { left: -30%; transform: rotate(0deg); visibility: visible; } 100% { left: 130%; transform: rotate(360deg); visibility: visible; } }
-        @keyframes blowLeft { 0% { right: -30%; transform: rotate(0deg); visibility: visible; } 100% { right: 130%; transform: rotate(-360deg); visibility: visible; } }
-        @keyframes danceRight { 0% { left: -30%; transform: translateY(0); visibility: visible; } 25% { transform: translateY(-30px); } 50% { transform: translateY(0); } 75% { transform: translateY(-30px); } 100% { left: 130%; visibility: visible; } }
-
+        /* --- APP UI --- */
         .app-header { background: #000; border-bottom: 4px solid var(--fh-pink); padding: 15px; position: relative; z-index: 1000; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .controls { display: flex; gap: 8px; }
-        #search-input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #151515; color: white; font-size: 16px; }
-        .dropdown-ui { background: #222; color: white; padding: 10px; border-radius: 8px; border: 1px solid #444; font-weight: 900; }
-
+        #display-name { font-family: 'Oswald'; color: var(--fh-yellow); font-style: italic; font-size: 1.2rem; }
+        
         .garage-scroll { height: calc(100vh - 170px); overflow-y: scroll; padding: 15px; }
         .car-item { background: #111; border-radius: 15px; padding: 20px; margin-bottom: 12px; border: 1px solid #222; position: relative; opacity: 0.4; }
-        .car-item.owned { border-left: 10px solid var(--fh-pink); background: #1a050a; opacity: 1; }
-        .dots { position: absolute; right: 10px; top: 10px; font-size: 2rem; color: var(--fh-yellow); padding: 10px; z-index: 50; }
+        .car-item.owned { border-left: 10px solid var(--fh-pink); opacity: 1; background: #1a050a; }
+        .dots { position: absolute; right: 10px; top: 10px; font-size: 2rem; color: var(--fh-yellow); padding: 10px; z-index: 50; cursor: pointer; }
 
+        /* --- MODALS --- */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 11000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
-        .car-preview-img { width: 100%; border-radius: 15px; margin: 15px 0; background: #151515; min-height: 200px; border: 2px solid #333; object-fit: contain; }
-        .btn-action { width: 100%; padding: 18px; background: var(--fh-pink); border-radius: 12px; border: none; color: white; font-weight: 900; margin-top: 10px; font-size: 1rem; }
+        .car-img { width: 100%; border-radius: 15px; margin: 20px 0; border: 2px solid #333; background: #000; min-height: 180px; object-fit: contain; }
+        .btn-action { width: 100%; padding: 18px; background: var(--fh-pink); border-radius: 12px; border: none; color: white; font-weight: 900; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; }
+
+        /* --- TUTORIAL --- */
+        #tutor-box { position: fixed; bottom: 30px; left: 20px; right: 20px; background: var(--fh-yellow); color: #000; padding: 25px; border-radius: 20px; z-index: 15000; display: none; font-weight: 900; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .tutor-highlight { z-index: 16000 !important; outline: 6px solid var(--fh-yellow); outline-offset: 5px; position: relative; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <div id="welcome-overlay">
-        <div class="festival-text" id="welcome-msg">WELCOME</div>
-        <div class="festival-sub" id="welcome-sub">TO THE HORIZON FESTIVAL</div>
-        <button class="btn-action" style="max-width:200px; margin-top:40px;" onclick="closeWelcome()">ENTER</button>
+        <div class="fest-title">WELCOME DRIVER!</div>
+        <div class="fest-sub">REGISTER FOR THE HORIZON FESTIVAL</div>
+        <input type="text" id="gamertag-input" class="name-box" placeholder="YOUR GAMERTAG">
+        <button class="btn-action" style="max-width:320px;" onclick="completeOnboarding()">START YOUR ENGINES</button>
     </div>
-
-    <div id="fx-layer"></div>
 
     <div class="app-header">
         <div class="top-nav">
-            <select id="game-picker" class="dropdown-ui" onchange="changeGame(this.value)">
+            <select id="game-sel" class="dropdown-ui" onchange="gameChange(this.value)" style="background:#222; color:white; padding:8px; border:1px solid #444; border-radius:8px; font-weight:900;">
                 <option value="FH4">FH4</option>
                 <option value="FH5" selected>FH5</option>
                 <option value="FH6">FH6</option>
             </select>
-            <div id="display-name" style="font-family:'Oswald'; color:var(--fh-yellow); font-style:italic;">COREYUM</div>
-            <div onclick="openSettings()" style="font-size:2rem; cursor:pointer;">⚙️</div>
+            <div id="display-name">---</div>
+            <div id="gear-btn" onclick="openSettings()" style="font-size:2rem; cursor:pointer;">⚙️</div>
         </div>
-        <div class="controls">
-            <input type="text" id="search-input" placeholder="Search..." oninput="doSearch()">
-            <select id="sort-picker" class="dropdown-ui" onchange="doSort(this.value)">
-                <option value="AZ">Manufacturer</option>
-                <option value="PI">PI Class</option>
-                <option value="VAL">Value</option>
-                <option value="FAV">Favorites</option>
-                <option value="WIS">Wishlist</option>
+        <div class="controls" id="search-bar" style="display:flex; gap:8px;">
+            <input type="text" id="q" placeholder="Find a car..." oninput="doSearch()" style="flex:1; padding:12px; border-radius:10px; background:#151515; border:1px solid #333; color:white;">
+            <select id="sort" onchange="doSort(this.value)" style="background:#222; color:white; padding:8px; border-radius:8px; border:1px solid #444;">
+                <option value="AZ">A-Z</option>
                 <option value="MISS">Missing</option>
-                <option value="ORIGIN">Country</option>
             </select>
         </div>
     </div>
 
     <div id="car-list" class="garage-scroll"></div>
 
+    <div id="tutor-box">
+        <p id="tutor-text"></p>
+        <button onclick="nextStep()" style="width:100%; padding:15px; background:#000; color:white; border:none; border-radius:10px; margin-top:15px; font-weight:900;">CONTINUE</button>
+    </div>
+
     <div id="car-modal" class="modal">
-        <div style="text-align:right; font-size:2.5rem;" onclick="closeModals()">✕</div>
-        <h2 id="m-title" style="font-family:'Oswald'; font-size:2rem; border-bottom:4px solid var(--fh-pink);"></h2>
-        <img id="m-img" class="car-preview-img" src="" alt="Forza Thumbnail">
-        <button id="m-own" class="btn-action">ADD TO GARAGE</button>
-        <button id="m-fav" class="btn-action" style="background:#444;">MAKE FAVORITE</button>
-        <button id="m-wish" class="btn-action" style="background:#004444; color:#00ffcc;">ADD TO WISHLIST</button>
-        <button id="m-share" class="btn-action" style="background:#0077ff;">SHARE ON SOCIALS</button>
+        <div style="text-align:right; font-size:2.5rem; margin-bottom:10px;" onclick="closeModals()">✕</div>
+        <h2 id="m-title" style="font-family:'Oswald'; font-size:2.2rem; border-bottom:4px solid var(--fh-pink); margin:0;"></h2>
+        <img id="m-img" class="car-img" src="" alt="Car Preview">
+        <button id="m-own-btn" class="btn-action">ADD TO GARAGE</button>
+        <button id="m-share-btn" class="btn-action" style="background:#0077ff; margin-top:12px;">SHARE TO SOCIALS</button>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('fh_v33_save')) || { name:"Coreyum", game:"FH5", owned:[], favs:[], wish:[], sort:"AZ", returning: false };
+        let db = JSON.parse(localStorage.getItem('fh_v35_save')) || { name: "", owned: [], step: 0 };
         
-        // Updated to Forza-specific CDN thumbnail pattern
+        // These link to your uploaded image filenames
         const cars = [
-            {id:1, m:"Porsche", n:"911 GT3", p:900, c:"S1", v:150000, o:"Germany", thumb:"https://static.wikia.nocookie.net/forzamotorsport/images/5/53/HOR_FH5_Porsche_911GT3_21.png"},
-            {id:2, m:"Toyota", n:"Supra RZ", p:620, c:"A", v:38000, o:"Japan", thumb:"https://static.wikia.nocookie.net/forzamotorsport/images/4/46/HOR_FH5_Toyota_Supra_RZ.png"},
-            {id:3, m:"Dodge", n:"Charger R/T", p:450, c:"B", v:64000, o:"USA", thumb:"https://static.wikia.nocookie.net/forzamotorsport/images/3/30/HOR_FH5_Dodge_Charger_RT.png"}
+            {id:1, m:"Porsche", n:"911 GT3", img:"porsche_911_gt3.png"},
+            {id:2, m:"Toyota", n:"Supra RZ", img:"toyota_supra_rz.png"},
+            {id:3, m:"Dodge", n:"Charger R/T", img:"dodge_charger_rt.png"}
         ];
 
         window.onload = () => {
-            const msg = document.getElementById('welcome-msg');
-            const sub = document.getElementById('welcome-sub');
-            
-            if(db.returning) {
-                msg.innerText = "WELCOME BACK";
-                sub.innerText = `${db.name.toUpperCase()}! READY TO DRIVE?`;
-            } else {
-                msg.innerText = "BIENVENIDO";
-                sub.innerText = `${db.name.toUpperCase()}! TO THE HORIZON FESTIVAL`;
+            if(db.name) {
+                document.getElementById('welcome-overlay').style.display = 'none';
+                document.getElementById('display-name').innerText = db.name.toUpperCase();
+                render();
             }
-            
-            document.getElementById('display-name').innerText = db.name.toUpperCase();
-            render();
         };
 
-        function closeWelcome() {
+        function completeOnboarding() {
+            const name = document.getElementById('gamertag-input').value;
+            if(!name) return;
+            db.name = name;
+            document.getElementById('display-name').innerText = name.toUpperCase();
             document.getElementById('welcome-overlay').style.display = 'none';
-            db.returning = true;
-            save();
+            save(); render();
+            startTutorial();
         }
 
-        function render(f = cars) {
+        function render() {
             const list = document.getElementById('car-list');
             list.innerHTML = '';
-            let sorted = [...f];
-            
-            if(db.sort === "PI") sorted.sort((a,b) => b.p - a.p);
-            else if(db.sort === "VAL") sorted.sort((a,b) => b.v - a.v);
-            else if(db.sort === "FAV") sorted = sorted.filter(c => db.favs.includes(c.id));
-            else if(db.sort === "WIS") sorted = sorted.filter(c => db.wish.includes(c.id));
-            else if(db.sort === "MISS") sorted = sorted.filter(c => !db.owned.includes(c.id));
-            else sorted.sort((a,b) => a.m.localeCompare(b.m));
-
-            sorted.forEach(c => {
+            cars.forEach(c => {
                 const item = document.createElement('div');
                 item.className = `car-item ${db.owned.includes(c.id) ? 'owned' : ''}`;
-                item.innerHTML = `<div class="dots" onclick="openCar(${c.id})">⋮</div><b>${c.m} ${c.n}</b><br><span style="color:var(--fh-yellow)">${c.c} ${c.p}</span>`;
+                item.id = `car-card-${c.id}`;
+                item.innerHTML = `<div class="dots" onclick="openCar(${c.id})">⋮</div><b>${c.m} ${c.n}</b>`;
                 list.appendChild(item);
             });
         }
@@ -141,43 +125,39 @@
         function openCar(id) {
             const c = cars.find(x => x.id === id);
             document.getElementById('m-title').innerText = `${c.m} ${c.n}`;
-            document.getElementById('m-img').src = c.thumb; 
-            
-            document.getElementById('m-own').innerText = db.owned.includes(id) ? "REMOVE FROM GARAGE" : "ADD TO GARAGE";
-            document.getElementById('m-own').onclick = () => { toggle(db.owned, id); render(); closeModals(); };
-            
-            document.getElementById('m-share').onclick = () => {
-                const choice = confirm("BUY or SELL?");
-                const text = `I'm looking to ${choice ? 'buy' : 'sell'} ${c.m} ${c.n} exactly the way it appears on Forza.`;
-                navigator.clipboard.writeText(text).then(() => alert("Copied!"));
+            document.getElementById('m-img').src = c.img;
+            document.getElementById('m-own-btn').innerText = db.owned.includes(id) ? "REMOVE FROM GARAGE" : "ADD TO GARAGE";
+            document.getElementById('m-own-btn').onclick = () => {
+                if(db.owned.includes(id)) db.owned = db.owned.filter(i => i !== id);
+                else db.owned.push(id);
+                save(); render(); closeModals();
             };
             document.getElementById('car-modal').style.display = 'flex';
         }
 
-        function changeGame(g) {
-            db.game = g;
-            const container = document.getElementById('fx-layer');
-            container.innerHTML = '';
-            const emojis = g === 'FH4' ? ['🍂', '🍂'] : (g === 'FH5' ? ['🪅', '🪅'] : ['🌸', '🌸']);
-            const anim = g === 'FH4' ? 'blowRight' : (g === 'FH5' ? 'danceRight' : 'blowLeft');
-            emojis.forEach((emoji, i) => {
-                const p = document.createElement('div');
-                p.className = 'huge-emoji';
-                p.innerText = emoji;
-                p.style.animation = `${anim} 3s ease-in-out forwards`;
-                p.style.top = (30 + (i * 20)) + '%';
-                container.appendChild(p);
-            });
+        const tData = [
+            { id: "game-sel", text: "Switch between Horizon 4, 5, and 6 here." },
+            { id: "search-bar", text: "Find specific cars or filter for the ones you're missing." },
+            { id: "car-card-1", text: "Tap the dots to see the car and manage your collection." },
+            { id: "gear-btn", text: "Settings: Manage DLCs or reset your progress." }
+        ];
+
+        function startTutorial() { document.getElementById('tutor-box').style.display = 'block'; updateStep(); }
+        function nextStep() {
+            document.getElementById(tData[db.step].id).classList.remove('tutor-highlight');
+            db.step++;
+            if(db.step >= tData.length) document.getElementById('tutor-box').style.display = 'none';
+            else updateStep();
             save();
         }
-
-        function doSearch() {
-            const val = document.getElementById('search-input').value.toLowerCase();
-            render(cars.filter(c => `${c.m} ${c.n}`.toLowerCase().includes(val)));
+        function updateStep() {
+            const s = tData[db.step];
+            document.getElementById(s.id).classList.add('tutor-highlight');
+            document.getElementById('tutor-text').innerText = s.text;
         }
-        function doSort(v) { db.sort = v; render(); save(); }
-        function toggle(arr, id) { const idx = arr.indexOf(id); if(idx > -1) arr.splice(idx, 1); else arr.push(id); save(); }
-        function save() { localStorage.setItem('fh_v33_save', JSON.stringify(db)); }
+
+        function openSettings() { alert("Settings: DLC Management & Data Reset."); }
+        function save() { localStorage.setItem('fh_v35_save', JSON.stringify(db)); }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     </script>
 </body>
