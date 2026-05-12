@@ -3,105 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forza Garage V21 | Full Fix</title>
+    <title>Forza Garage Master | V22</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #0a0a0c; --glass: rgba(255, 255, 255, 0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* --- THE NUCLEAR BACKGROUND FIX --- */
+        /* --- THE FIXED BACKGROUND --- */
         #master-bg { 
             position: fixed; inset: 0; z-index: -1; 
-            background-image: url('https://coreyum-racing.github.io/Forza-Garage/IMG_4135.png'), url('IMG_4135.png'); 
+            background-image: url('https://coreyum-racing.github.io/Forza-Garage/IMG_4135.png'); 
             background-size: cover; background-position: center; 
             filter: brightness(0.4); transition: 1.5s; 
         }
-        
-        /* --- HEADER & SEARCH (ADAPTIVE GLASS) --- */
+
+        /* --- HEADER (GLASS) --- */
         .header { padding: 15px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-bottom: 3px solid var(--fh-pink); position: relative; z-index: 1001; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; }
         .user-title { font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: var(--fh-yellow); font-style: italic; text-transform: uppercase; }
         
-        .search-bar { width: 100%; display: flex; gap: 8px; margin-top: 10px; }
-        .search-input { flex: 1; padding: 12px; border-radius: 15px; border: 1px solid var(--glass); background: var(--glass); color: white; outline: none; }
-        .sort-btn { padding: 10px 15px; background: var(--fh-pink); border: none; border-radius: 12px; color: white; font-weight: 900; font-family: 'Oswald'; }
-
         /* --- CAR CARDS (ROUNDED GLASS) --- */
-        .list-container { height: 65vh; overflow-y: auto; padding: 15px 15px 150px; }
-        .car-card { background: var(--glass); backdrop-filter: blur(15px); border-radius: 25px; margin-bottom: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; }
-        .car-card.owned { border: 2px solid var(--fh-pink); background: rgba(0,0,0,0.6); }
+        .list-container { height: 70vh; overflow-y: auto; padding: 15px 15px 150px; }
+        .car-card { background: var(--glass); backdrop-filter: blur(15px); border-radius: 20px; margin-bottom: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; }
+        .car-card.owned { border-left: 8px solid var(--fh-pink); background: rgba(0,0,0,0.7); }
+        .dots-btn { font-size: 1.8rem; color: var(--fh-yellow); cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 15px; }
 
-        /* --- TUTORIAL OVERLAY --- */
-        #tutor-box { position: fixed; bottom: 120px; left: 20px; right: 20px; background: var(--fh-yellow); color: black; padding: 20px; border-radius: 20px; z-index: 10000; font-weight: 900; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .tutor-highlight { z-index: 10001 !important; border: 5px solid var(--fh-yellow) !important; position: relative; }
-        .tutor-dim { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: none; }
-
-        /* --- MODALS --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 11000; display: none; flex-direction: column; padding: 40px 20px; }
+        /* --- OVERLAYS & MODALS --- */
+        .overlay-screen { position: fixed; inset: 0; background: black; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; display: none; flex-direction: column; padding: 40px 20px; }
         .modal.active { display: flex; }
-        .btn-main { width: 100%; padding: 20px; background: var(--fh-pink); border-radius: 15px; border: none; color: white; font-weight: 900; margin-top: 15px; text-transform: uppercase; }
-        .overlay-screen { position: fixed; inset: 0; background: black; z-index: 12000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .btn-main { width: 100%; padding: 20px; background: var(--fh-pink); border-radius: 15px; border: none; color: white; font-weight: 900; margin-top: 15px; text-transform: uppercase; cursor: pointer; }
+        
+        /* --- TUTORIAL HIGHLIGHT --- */
+        .tutor-highlight { z-index: 7000 !important; border: 4px solid var(--fh-yellow) !important; box-shadow: 0 0 20px var(--fh-yellow); }
     </style>
 </head>
 <body>
 
     <div id="master-bg"></div>
-    <div id="tutor-dim" class="tutor-dim"></div>
-    <div id="tutor-box">
-        <p id="tutor-text"></p>
-        <button onclick="advanceTutorial()" class="btn-main" style="background:black; padding:10px;">NEXT STEP</button>
-    </div>
 
     <div id="step-name" class="overlay-screen">
-        <h1 style="font-family:'Oswald'; color:var(--fh-yellow); font-size: 3rem;">FORZA GARAGE</h1>
-        <input type="text" id="input-name" class="search-input" style="width:90%; border:2px solid var(--fh-yellow);" placeholder="ENTER DRIVER NAME">
-        <button onclick="nextStartup(1)" class="btn-main" style="width:90%;">IGNITION</button>
+        <h1 style="font-family:'Oswald'; color:var(--fh-yellow);">START ENGINE</h1>
+        <input type="text" id="input-name" style="width:80%; padding:15px; border-radius:12px;" placeholder="DRIVER NAME">
+        <button onclick="nextStartup(1)" class="btn-main" style="width:80%;">CONTINUE</button>
     </div>
 
     <div id="step-dlc" class="overlay-screen">
-        <h2 style="font-family:'Oswald';">SELECT EXPANSIONS</h2>
-        <div style="text-align:left; font-weight: 900; font-size: 1.2rem;">
-            <label><input type="checkbox" id="check-lego" style="transform:scale(1.5);"> FH4: LEGO Champions</label><br><br>
-            <label><input type="checkbox" id="check-hw" style="transform:scale(1.5);"> FH5: Hot Wheels</label>
+        <h2 style="font-family:'Oswald';">OWNED DLC?</h2>
+        <div style="text-align:left;">
+            <label><input type="checkbox" id="check-lego"> FH4 LEGO</label><br><br>
+            <label><input type="checkbox" id="check-hw"> FH5 HOT WHEELS</label>
         </div>
         <button onclick="nextStartup(2)" class="btn-main">CONTINUE</button>
     </div>
 
+    <div id="step-alert" class="overlay-screen">
+        <div style="background:#222; border:3px solid var(--fh-pink); padding:25px; border-radius:20px;">
+            <h3 style="color:var(--fh-yellow);">BASE GAME ALERT</h3>
+            <p>Collection defaults to base game. Add DLCs in Settings.</p>
+            <button onclick="startMainApp()" class="btn-main">I UNDERSTAND</button>
+        </div>
+    </div>
+
     <div class="header">
         <div class="top-row">
-            <div id="tutor-game-btn" class="sort-btn" style="background:#222; border:1px solid #444;" onclick="toggleGameMenu()">▣ <span id="game-label">FH5</span></div>
-            <div class="user-title" id="name-display">COREYUM</div>
-            <div id="tutor-settings-btn" style="font-size:1.8rem; cursor:pointer;" onclick="openSettings()">⚙️</div>
-        </div>
-        <div class="search-bar" id="tutor-search-bar">
-            <input type="text" class="search-input" placeholder="Search Garage..." oninput="handleSearch(this.value)">
-            <button class="sort-btn" onclick="toggleSort()">SORT ▼</button>
+            <div id="ui-game" class="btn-main" style="margin:0; padding:10px; width:auto; background:#222;" onclick="swapGame()">▣ <span id="game-label">FH5</span></div>
+            <div class="user-title" id="name-display">DRIVER</div>
+            <div id="ui-settings" style="font-size:1.8rem; cursor:pointer;" onclick="openSettings()">⚙️</div>
         </div>
     </div>
 
     <div class="list-container" id="car-list"></div>
 
     <div id="modal-car" class="modal">
-        <div style="text-align:right; font-size:2rem; font-weight: 900;" onclick="closeModals()">✕</div>
-        <h2 id="modal-car-title" style="font-family:'Oswald'; font-size: 2rem; border-bottom: 4px solid var(--fh-pink);">CAR NAME</h2>
-        <p id="modal-car-info" style="font-size: 1.2rem; color: var(--fh-yellow);"></p>
-        <button class="btn-main" onclick="toggleOwnership()">ADD TO COLLECTION</button>
-        <button class="btn-main" style="background:#222; border: 1px solid #444;" onclick="copySocial()">SHARE ON SOCIAL</button>
+        <div style="text-align:right; font-size:2rem;" onclick="closeModals()">✕</div>
+        <h2 id="modal-title" style="font-family:'Oswald'; border-bottom: 3px solid var(--fh-pink);"></h2>
+        <button id="own-btn" class="btn-main">ADD TO GARAGE</button>
+        <button class="btn-main" style="background:#333;" onclick="alert('Link Copied!')">SHARE SOCIAL</button>
     </div>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('fh_v21_save')) || { 
-            name: "", onboarding: true, game: 'FH5', owned: [], tutorStep: 0 
+        let state = JSON.parse(localStorage.getItem('fh_master_v22')) || { 
+            name: "", onboarding: true, game: 'FH5', owned: [] 
         };
 
         const cars = [
-            { id: 1, make: "Porsche", model: "911 GT3", pi: 900, class: "S1", value: "150,000" },
-            { id: 2, make: "Dodge", model: "Charger R/T", pi: 450, class: "B", value: "64,000" },
-            { id: 3, make: "Toyota", model: "Supra RZ", pi: 620, class: "A", value: "38,000" }
+            { id: 1, make: "Porsche", model: "911 GT3", pi: 900, class: "S1" },
+            { id: 2, make: "Toyota", model: "Supra RZ", pi: 620, class: "A" }
         ];
 
-        let activeCarId = null;
+        let activeCar = null;
 
         window.onload = () => {
             if(state.onboarding) { document.getElementById('step-name').style.display = 'flex'; }
@@ -109,86 +101,59 @@
         };
 
         function nextStartup(s) {
-            if(s === 1) { 
-                state.name = document.getElementById('input-name').value || "Driver"; 
-                document.getElementById('step-name').style.display = 'none'; 
-                document.getElementById('step-dlc').style.display = 'flex'; 
-            }
-            if(s === 2) {
-                document.getElementById('step-dlc').style.display = 'none';
-                state.onboarding = false;
-                save();
-                init();
-                startTutorial();
-            }
+            if(s === 1) { state.name = document.getElementById('input-name').value || "Driver"; document.getElementById('step-name').style.display = 'none'; document.getElementById('step-dlc').style.display = 'flex'; }
+            if(s === 2) { document.getElementById('step-dlc').style.display = 'none'; document.getElementById('step-alert').style.display = 'flex'; }
+        }
+
+        function startMainApp() {
+            state.onboarding = false; save();
+            document.querySelectorAll('.overlay-screen').forEach(s => s.style.display = 'none');
+            init();
         }
 
         function init() {
             document.getElementById('name-display').innerText = state.name.toUpperCase();
-            renderCars();
+            render();
         }
 
-        function renderCars() {
+        function render() {
             const list = document.getElementById('car-list');
             list.innerHTML = '';
             cars.forEach(c => {
                 const isOwned = state.owned.includes(c.id);
                 const card = document.createElement('div');
                 card.className = `car-card ${isOwned ? 'owned' : ''}`;
-                card.id = `car-card-${c.id}`;
-                card.onclick = () => openCar(c.id);
                 card.innerHTML = `
-                    <div style="font-weight:900; font-size:1.3rem;">${c.make} ${c.model}</div>
-                    <div style="color:var(--fh-yellow); font-weight:900; margin-top:5px;">${c.class} ${c.pi}</div>
-                    <div style="font-size:0.8rem; opacity:0.6; margin-top:5px;">${c.value} CR</div>
+                    <div class="dots-btn" onclick="openCar(${c.id})">⋮</div>
+                    <div style="font-weight:900; font-size:1.2rem;">${c.make} ${c.model}</div>
+                    <div style="color:var(--fh-yellow); font-weight:900;">${c.class} ${c.pi}</div>
                 `;
                 list.appendChild(card);
             });
         }
 
-        /* --- TUTORIAL LOGIC --- */
-        const tutorSteps = [
-            { id: 'tutor-game-btn', text: "Tap here to switch between Forza Horizon 4, 5, and 6!" },
-            { id: 'tutor-search-bar', text: "Search for specific models or SORT by Class, PI, and Value." },
-            { id: 'car-card-1', text: "These are Car Blocks. Tap one to view details or add it to your collection." },
-            { id: 'tutor-settings-btn', text: "Finally, check Settings to reset the tutorial or change your background image!" }
-        ];
-
-        function startTutorial() {
-            state.tutorStep = 0;
-            document.getElementById('tutor-dim').style.display = 'block';
-            document.getElementById('tutor-box').style.display = 'block';
-            showStep();
-        }
-
-        function showStep() {
-            tutorSteps.forEach(s => document.getElementById(s.id)?.classList.remove('tutor-highlight'));
-            const step = tutorSteps[state.tutorStep];
-            document.getElementById(step.id).classList.add('tutor-highlight');
-            document.getElementById('tutor-text').innerText = step.text;
-        }
-
-        function advanceTutorial() {
-            state.tutorStep++;
-            if(state.tutorStep >= tutorSteps.length) {
-                document.getElementById('tutor-dim').style.display = 'none';
-                document.getElementById('tutor-box').style.display = 'none';
-                tutorSteps.forEach(s => document.getElementById(s.id).classList.remove('tutor-highlight'));
-            } else {
-                showStep();
-            }
-        }
-
         function openCar(id) {
-            activeCarId = id;
-            const car = cars.find(c => c.id === id);
-            document.getElementById('modal-car-title').innerText = `${car.make} ${car.model}`;
-            document.getElementById('modal-car-info').innerText = `${car.class} ${car.pi} | ${car.value} CR`;
+            activeCar = cars.find(c => c.id === id);
+            document.getElementById('modal-title').innerText = `${activeCar.make} ${activeCar.model}`;
+            document.getElementById('own-btn').innerText = state.owned.includes(id) ? "REMOVE" : "ADD TO GARAGE";
+            document.getElementById('own-btn').onclick = () => {
+                if(state.owned.includes(id)) state.owned = state.owned.filter(i => i !== id);
+                else state.owned.push(id);
+                save(); render(); closeModals();
+            };
             document.getElementById('modal-car').classList.add('active');
         }
 
+        function swapGame() {
+            const games = ['FH4', 'FH5', 'FH6'];
+            let idx = games.indexOf(state.game);
+            state.game = games[(idx + 1) % 3];
+            document.getElementById('game-label').innerText = state.game;
+            save();
+        }
+
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
-        function save() { localStorage.setItem('fh_v21_save', JSON.stringify(state)); }
+        function save() { localStorage.setItem('fh_master_v22', JSON.stringify(state)); }
     </script>
 </body>
 </html>
