@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forza Garage | V30 Pro</title>
+    <title>Forza Garage | V31 Complete</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #050505; }
@@ -25,14 +25,17 @@
         .dropdown-ui { background: #222; color: white; padding: 10px; border-radius: 8px; border: 1px solid #444; font-weight: 900; }
 
         .garage-scroll { height: calc(100vh - 170px); overflow-y: scroll; padding: 15px; }
-        .car-item { background: #111; border-radius: 15px; padding: 20px; margin-bottom: 12px; border: 1px solid #222; position: relative; }
-        .car-item.owned { border-left: 10px solid var(--fh-pink); background: #1a050a; }
+        .car-item { background: #111; border-radius: 15px; padding: 20px; margin-bottom: 12px; border: 1px solid #222; position: relative; opacity: 0.4; }
+        .car-item.owned { border-left: 10px solid var(--fh-pink); background: #1a050a; opacity: 1; }
         .fav-star { color: var(--fh-yellow); position: absolute; left: 10px; top: 10px; font-size: 1.2rem; }
+        .wish-tag { color: #00ffcc; position: absolute; left: 35px; top: 10px; font-size: 1.2rem; }
         .dots { position: absolute; right: 10px; top: 10px; font-size: 2rem; color: var(--fh-yellow); padding: 10px; z-index: 50; }
         .car-val { font-size: 0.8rem; opacity: 0.6; margin-top: 5px; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 11000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
+        .sub-modal { background: #111; padding: 20px; border-radius: 20px; margin-top: 20px; border: 1px solid #333; }
         .btn-action { width: 100%; padding: 18px; background: var(--fh-pink); border-radius: 12px; border: none; color: white; font-weight: 900; margin-top: 10px; font-size: 1rem; }
+        .dlc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -56,6 +59,8 @@
                 <option value="PI">PI Class</option>
                 <option value="VAL">Value</option>
                 <option value="FAV">Favorites</option>
+                <option value="WIS">Wishlist</option>
+                <option value="MISS">Missing</option>
                 <option value="ORIGIN">Country</option>
             </select>
         </div>
@@ -67,21 +72,56 @@
         <div style="text-align:right; font-size:2.5rem;" onclick="closeModals()">✕</div>
         <h2 id="m-title" style="font-family:'Oswald'; font-size:2rem; border-bottom:4px solid var(--fh-pink);"></h2>
         <button id="m-own" class="btn-action">ADD TO GARAGE</button>
-        <button id="m-fav" class="btn-action" style="background:#444;">MARK AS FAVORITE</button>
+        <button id="m-fav" class="btn-action" style="background:#444;">MAKE FAVORITE</button>
+        <button id="m-wish" class="btn-action" style="background:#004444; color:#00ffcc;">ADD TO WISHLIST</button>
         <button id="m-share" class="btn-action" style="background:#0077ff;">SHARE ON SOCIALS</button>
     </div>
 
     <div id="settings-modal" class="modal">
         <div style="text-align:right; font-size:2.5rem;" onclick="closeModals()">✕</div>
         <h2 style="font-family:'Oswald'; color:var(--fh-pink);">SETTINGS</h2>
+        
         <input type="text" id="set-name-input" class="dropdown-ui" style="width:100%; margin:10px 0;" onchange="updateName(this.value)">
-        <label><input type="checkbox" id="set-dlc1" onchange="saveSettings()"> FH4: LEGO Champions</label><br><br>
-        <label><input type="checkbox" id="set-dlc2" onchange="saveSettings()"> FH5: Hot Wheels</label>
-        <button class="btn-action" style="background:#222;" onclick="localStorage.clear(); location.reload();">RESET DATA</button>
+        
+        <button class="btn-action" style="background:#333;" onclick="openDLC()">DLC MANAGEMENT</button>
+        
+        <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button class="btn-action" style="background:#222; font-size:0.8rem;" onclick="clearList('favs')">CLEAR FAVORITES</button>
+            <button class="btn-action" style="background:#222; font-size:0.8rem;" onclick="clearList('wish')">CLEAR WISHLIST</button>
+        </div>
+
+        <button class="btn-action" style="background:transparent; border:1px solid #444; color:#666; margin-top:50px;" onclick="localStorage.clear(); location.reload();">RESET ALL DATA</button>
+    </div>
+
+    <div id="dlc-modal" class="modal">
+        <div style="text-align:right; font-size:2.5rem;" onclick="document.getElementById('dlc-modal').style.display='none'">✕</div>
+        <h2 style="font-family:'Oswald'; color:var(--fh-yellow);">DLC MANAGEMENT</h2>
+        
+        <div class="sub-modal">
+            <h3>FORZA HORIZON 4</h3>
+            <div class="dlc-grid" id="dlc-fh4"></div>
+        </div>
+
+        <div class="sub-modal">
+            <h3>FORZA HORIZON 5</h3>
+            <div class="dlc-grid" id="dlc-fh5"></div>
+        </div>
+
+        <div class="sub-modal">
+            <h3>FORZA HORIZON 6</h3>
+            <div class="dlc-grid" id="dlc-fh6"></div>
+        </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('fh_v30_save')) || { name:"Coreyum", game:"FH5", owned:[], favs:[], sort:"AZ", dlc1:true, dlc2:true };
+        let db = JSON.parse(localStorage.getItem('fh_v31_save')) || { name:"Coreyum", game:"FH5", owned:[], favs:[], wish:[], sort:"AZ", dlcs:[] };
+        
+        const dlcMaster = {
+            FH4: ["Fortune Island", "LEGO Champions", "Car Pass", "Best of Bond", "Formula Drift", "Barrett-Jackson"],
+            FH5: ["Hot Wheels", "Rally Adventure", "Car Pass", "VIP Membership", "Welcome Pack", "Expansion Bundle"],
+            FH6: ["Early Access Pass", "Standard DLC 1", "Standard DLC 2"]
+        };
+
         const cars = [
             {id:1, m:"Porsche", n:"911 GT3", p:900, c:"S1", v:150000, o:"Germany"},
             {id:2, m:"Toyota", n:"Supra RZ", p:620, c:"A", v:38000, o:"Japan"},
@@ -101,7 +141,9 @@
             
             if(db.sort === "PI") sorted.sort((a,b) => b.p - a.p);
             else if(db.sort === "VAL") sorted.sort((a,b) => b.v - a.v);
-            else if(db.sort === "FAV") sorted.sort((a,b) => (db.favs.includes(b.id) ? 1 : -1));
+            else if(db.sort === "FAV") sorted = sorted.filter(c => db.favs.includes(c.id));
+            else if(db.sort === "WIS") sorted = sorted.filter(c => db.wish.includes(c.id));
+            else if(db.sort === "MISS") sorted = sorted.filter(c => !db.owned.includes(c.id));
             else if(db.sort === "ORIGIN") sorted.sort((a,b) => a.o.localeCompare(b.o));
             else sorted.sort((a,b) => a.m.localeCompare(b.m));
 
@@ -110,6 +152,7 @@
                 item.className = `car-item ${db.owned.includes(c.id) ? 'owned' : ''}`;
                 item.innerHTML = `
                     ${db.favs.includes(c.id) ? '<span class="fav-star">★</span>' : ''}
+                    ${db.wish.includes(c.id) ? '<span class="wish-tag">💎</span>' : ''}
                     <div class="dots" onclick="openCar(${c.id})">⋮</div>
                     <b>${c.m} ${c.n}</b><br>
                     <span style="color:var(--fh-yellow)">${c.c} ${c.p}</span>
@@ -123,7 +166,7 @@
             render(cars.filter(c => `${c.m} ${c.n}`.toLowerCase().includes(val)));
         }
 
-        function doSort(v) { db.sort = v; render(); saveSettings(); }
+        function doSort(v) { db.sort = v; render(); save(); }
 
         function changeGame(g) {
             db.game = g;
@@ -139,25 +182,23 @@
                 p.style.top = (30 + (i * 20)) + '%';
                 container.appendChild(p);
             });
-            saveSettings();
+            save();
         }
 
         function openCar(id) {
             const c = cars.find(x => x.id === id);
             const carName = `${c.m} ${c.n}`;
             document.getElementById('m-title').innerText = carName;
-            document.getElementById('m-own').innerText = db.owned.includes(id) ? "REMOVE" : "ADD";
-            document.getElementById('m-own').onclick = () => {
-                if(db.owned.includes(id)) db.owned = db.owned.filter(i => i !== id);
-                else db.owned.push(id);
-                saveSettings(); render(); closeModals();
-            };
+            
+            document.getElementById('m-own').innerText = db.owned.includes(id) ? "REMOVE FROM GARAGE" : "ADD TO GARAGE";
+            document.getElementById('m-own').onclick = () => { toggle(db.owned, id); render(); closeModals(); };
+            
             document.getElementById('m-fav').innerText = db.favs.includes(id) ? "REMOVE FAVORITE" : "MAKE FAVORITE";
-            document.getElementById('m-fav').onclick = () => {
-                if(db.favs.includes(id)) db.favs = db.favs.filter(i => i !== id);
-                else db.favs.push(id);
-                saveSettings(); render(); closeModals();
-            };
+            document.getElementById('m-fav').onclick = () => { toggle(db.favs, id); render(); closeModals(); };
+            
+            document.getElementById('m-wish').innerText = db.wish.includes(id) ? "REMOVE FROM WISHLIST" : "ADD TO WISHLIST";
+            document.getElementById('m-wish').onclick = () => { toggle(db.wish, id); render(); closeModals(); };
+
             document.getElementById('m-share').onclick = () => {
                 const choice = confirm("Do you wish to BUY this car? (Cancel for SELL)");
                 const action = choice ? "buy a" : "sell my";
@@ -167,8 +208,31 @@
             document.getElementById('car-modal').style.display = 'flex';
         }
 
-        function updateName(n) { db.name = n; document.getElementById('display-name').innerText = n.toUpperCase(); saveSettings(); }
-        function saveSettings() { localStorage.setItem('fh_v30_save', JSON.stringify(db)); }
+        function toggle(arr, id) {
+            const idx = arr.indexOf(id);
+            if(idx > -1) arr.splice(idx, 1);
+            else arr.push(id);
+            save();
+        }
+
+        function openDLC() {
+            ['FH4', 'FH5', 'FH6'].forEach(game => {
+                const grid = document.getElementById(`dlc-${game.toLowerCase()}`);
+                grid.innerHTML = '';
+                dlcMaster[game].forEach(d => {
+                    const label = document.createElement('label');
+                    const checked = db.dlcs.includes(d) ? 'checked' : '';
+                    label.innerHTML = `<input type="checkbox" ${checked} onchange="toggleDLC('${d}')"> ${d}`;
+                    grid.appendChild(label);
+                });
+            });
+            document.getElementById('dlc-modal').style.display = 'flex';
+        }
+
+        function toggleDLC(name) { toggle(db.dlcs, name); }
+        function clearList(key) { if(confirm("Clear this list?")) { db[key] = []; save(); render(); } }
+        function updateName(n) { db.name = n; document.getElementById('display-name').innerText = n.toUpperCase(); save(); }
+        function save() { localStorage.setItem('fh_v31_save', JSON.stringify(db)); }
         function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     </script>
