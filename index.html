@@ -12,127 +12,96 @@
             --fh-cyan: #00f7ff;
             --bg-black: #050506;
             --panel-bg: #121217;
-            --neon-shadow: 0 0 15px rgba(255, 45, 85, 0.4);
+            --neon-shadow: 0 0 20px rgba(255, 45, 85, 0.5);
         }
 
-        /* --- GLOBAL RESET --- */
+        /* --- GLOBAL RESET & TYPOGRAPHY --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body, html { 
             margin: 0; padding: 0; 
-            background: var(--bg-black); 
-            color: white; 
-            font-family: 'Inter', sans-serif; 
-            overflow: hidden; 
+            background: var(--bg-black); color: white; 
+            font-family: 'Inter', sans-serif; overflow: hidden; 
             width: 100vw; height: 100vh; 
         }
 
-        /* --- WATERMARK & SERIAL --- */
-        #footer-meta { 
-            position: fixed; bottom: 8px; left: 0; right: 0; 
-            display: flex; justify-content: center; gap: 20px;
-            font-size: 10px; font-family: monospace; opacity: 0.15; 
-            z-index: 99999; pointer-events: none; letter-spacing: 2px;
+        /* --- HEADER & NAVIGATION --- */
+        .header { 
+            background: #000; border-bottom: 4px solid var(--fh-pink); 
+            padding: 20px; position: relative; z-index: 5000; 
+        }
+        .nav-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        .username-banner { 
+            font-family: 'Oswald'; font-size: 2.2rem; /* BIGGER USERNAME */
+            text-transform: uppercase; color: white; text-shadow: 2px 2px 0px var(--fh-pink);
         }
 
-        /* --- FULLSCREEN OVERLAY SYSTEM --- */
-        .overlay { 
-            position: fixed; inset: 0; 
-            background: var(--bg-black); 
-            z-index: 10000; 
-            display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; 
-            text-align: center; padding: 30px;
-            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .icon-btn { 
+            font-size: 2.2rem; cursor: pointer; color: #888; 
+            transition: 0.2s; position: relative; z-index: 6000;
+        }
+        .icon-btn:active { transform: scale(0.8); color: var(--fh-pink); }
+
+        /* --- SEARCH (75%) & SORT (25%) --- */
+        .search-row { display: flex; width: 100%; gap: 10px; }
+        .search-bar { 
+            width: 75%; background: #1a1a20; border: 2px solid #333; 
+            border-radius: 8px; padding: 15px; color: white; 
+            font-family: 'Oswald'; font-size: 1.4rem; 
+        }
+        .sort-dropdown { 
+            width: 25%; background: #1a1a20; border: 2px solid #333; 
+            border-radius: 8px; color: var(--fh-yellow); 
+            font-family: 'Oswald'; font-size: 1.2rem; text-align: center;
+        }
+
+        /* --- CAR CARDS (THE PUMPING AESTHETIC) --- */
+        .garage-container { height: calc(100vh - 200px); overflow-y: auto; padding: 15px; display: grid; gap: 20px; }
+        
+        .car-box { 
+                    .car-box.owned { 
+            opacity: 1; 
+            border-left: 10px solid var(--fh-pink); 
+            background: linear-gradient(135deg, #121217 0%, #1a1a22 100%);
+            box-shadow: 0 0 20px rgba(255, 45, 85, 0.2);
+            border-color: #333;
+        }
+        .car-box.faved { border-right: 5px solid var(--fh-yellow); }
+        .car-box.wished { border-right: 5px solid var(--fh-cyan); }
+
+        }
+        .car-box.owned { border-left: 12px solid var(--fh-pink); background: linear-gradient(135deg, #121217 0%, #1c1c25 100%); opacity: 1; }
+        
+        .car-title { font-family: 'Oswald'; font-size: 2.8rem; line-height: 1.1; text-transform: uppercase; }
+        .car-year { color: #666; font-size: 1.8rem; }
+        .car-make { color: var(--fh-yellow); font-size: 2.2rem; margin-top: -5px; }
+
+        .car-stats { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px; }
+        .stat-pi { font-family: 'Oswald'; font-size: 2.5rem; background: var(--fh-cyan); color: black; padding: 0 15px; border-radius: 5px; }
+        .stat-val { font-family: 'Oswald'; font-size: 1.8rem; color: #aaa; }
+
+        /* --- 3-DOT MENU TOP RIGHT --- */
+        .dot-trigger { 
+            position: absolute; top: 20px; right: 20px; 
+            font-size: 2.5rem; color: #444; cursor: pointer; padding: 10px;
+        }
+        .dot-menu { 
+            display: none; position: absolute; top: 60px; right: 20px; 
+            background: #000; border: 2px solid var(--fh-pink); border-radius: 12px;
+            flex-direction: column; z-index: 10000; width: 220px; overflow: hidden;
+        }
+        .dot-action { padding: 15px; font-weight: 900; border-bottom: 1px solid #222; cursor: pointer; font-size: 1.1rem; }
+        .dot-action:hover { background: var(--fh-pink); color: white; }
+
+        /* --- OVERLAYS --- */
+        .overlay, .fullscreen-overlay { 
+            position: fixed; inset: 0; background: var(--bg-black); 
+            z-index: 20000; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; padding: 30px;
         }
         .hidden { display: none !important; }
-        .slide-out { transform: translateY(-100%); }
 
-        /* --- PUMPING TYPOGRAPHY --- */
-        .hero-text { 
-            font-family: 'Oswald'; font-style: italic; font-size: 4.5rem; 
-            line-height: 0.9; color: var(--fh-pink); 
-            text-transform: uppercase; margin-bottom: 10px;
-            text-shadow: var(--neon-shadow);
-            animation: textPulse 2s infinite;
-        }
-        @keyframes textPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-
-        .sub-text { 
-            font-weight: 900; letter-spacing: 3px; 
-            color: var(--fh-yellow); font-size: 1.1rem; 
-            text-transform: uppercase; margin-bottom: 40px; 
-        }
-
-        /* --- INPUTS & BUTTONS --- */
-        .gamertag-input { 
-            background: transparent; border: 4px solid #222; 
-            padding: 20px; border-radius: 12px; width: 100%; max-width: 450px; 
-            color: white; font-size: 1.8rem; text-align: center; 
-            font-family: 'Oswald'; margin-bottom: 30px; 
-            transition: 0.3s;
-        }
-        .gamertag-input:focus { border-color: var(--fh-pink); box-shadow: var(--neon-shadow); }
-
-        .btn-horizon { 
-            width: 100%; max-width: 450px; padding: 22px; 
-            background: var(--fh-pink); border-radius: 12px; border: none; 
-            color: white; font-weight: 900; font-size: 1.3rem; 
-            cursor: pointer; text-transform: uppercase; transition: 0.2s; 
-            margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-        }
-        .btn-horizon:active { transform: scale(0.96); }
-        .btn-outline { background: #1a1a20; border: 2px solid #333; }
-        .btn-outline:hover { border-color: var(--fh-yellow); }
-
-        /* --- ANIMATION FX LAYER --- */
-        #fx-canvas { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
-        .fx-item { 
-            position: absolute; width: 124px; height: 124px; 
-            font-size: 8rem; display: flex; align-items: center; 
-            justify-content: center; visibility: hidden; 
-        }
-
-        /* FH4: Autumn Leaves */
-        @keyframes blowFH4 { 
-            0% { left: -20%; transform: rotate(0deg) translateY(0); visibility: visible; } 
-            100% { left: 120%; transform: rotate(720deg) translateY(50px); visibility: visible; } 
-        }
-        /* FH5: Piñatas */
-        @keyframes danceFH5 { 
-            0% { left: -20%; transform: rotate(-15deg); visibility: visible; } 
-            25% { transform: rotate(15deg) translateY(-60px); }
-            50% { transform: rotate(-15deg) translateY(0); }
-            75% { transform: rotate(15deg) translateY(-60px); }
-            100% { left: 120%; transform: rotate(-15deg); visibility: visible; } 
-        }
-        /* FH6: Sakura */
-        @keyframes blowFH6 { 
-            0% { left: -20%; transform: rotate(0deg) scale(0.8); visibility: visible; opacity: 0; } 
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { left: 120%; transform: rotate(360deg) scale(1.2); visibility: visible; opacity: 0; } 
-        }
-
-        /* --- MAIN UI HEADER --- */
-        .header { 
-            background: #000; border-bottom: 5px solid var(--fh-pink); 
-            padding: 15px 25px; position: relative; z-index: 5000; 
-            display: flex; flex-direction: column; gap: 15px;
-        }
-        .nav-top { display: flex; justify-content: space-between; align-items: center; }
-        .game-select-box { 
-            background: #111; color: var(--fh-pink); 
-            font-family: 'Oswald'; font-style: italic; font-size: 1.6rem; 
-            border: 2px solid #222; border-radius: 8px; padding: 5px 10px;
-        }
-        .username-banner { font-family: 'Oswald'; text-transform: uppercase; letter-spacing: 1px; color: white; }
-        
-        /* --- CAR CARDS --- */
-        .garage-container { height: calc(100vh - 160px); overflow-y: auto; padding: 20px; display: grid; gap: 15px; }
-        .car-box { 
-            background: var(--panel-bg); border: 2px solid #222; border-radius: 15px; 
-            padding: 20px; position: relative; opacity: 0.3; transition: 0.3s;
-        }
         .car-box.owned { opacity: 1; border-left: 10px solid var(--fh-pink); background: linear-gradient(135deg, #121217 0%, #1a1a22 100%); }
         .dot-menu-btn { position: absolute; top: 15px; right: 15px; font-size: 1.8rem; color: var(--fh-yellow); cursor: pointer; }
     </style>
@@ -398,16 +367,35 @@
 </script>
 <script>
     // THE STARTER DATABASE (Expand this array with the same format for more cars)
-    const CAR_DB = [
+        const CAR_DB = [
+        // FORZA HORIZON 5
         { id: 101, g: "FH5", y: 2021, m: "Mercedes-AMG", n: "One", pi: 927, c: "S2", v: 2700000, co: "Germany", dlc: null },
         { id: 102, g: "FH5", y: 2020, m: "Lamborghini", n: "Huracán STO", pi: 820, c: "S1", v: 350000, co: "Italy", dlc: "Car Pass" },
         { id: 103, g: "FH5", y: 1995, m: "Porsche", n: "911 Carrera 2 by GW", pi: 815, c: "S1", v: 500000, co: "Germany", dlc: null },
+        { id: 109, g: "FH5", y: 2022, m: "Ferrari", n: "SF90 Stradale", pi: 945, c: "S2", v: 450000, co: "Italy", dlc: null },
+        { id: 110, g: "FH5", y: 2021, m: "Rimac", n: "Nevera", pi: 984, c: "S2", v: 3000000, co: "Croatia", dlc: null },
+        { id: 116, g: "FH5", y: 2021, m: "Porsche", n: "911 GT3", pi: 834, c: "S1", v: 175000, co: "Germany", dlc: null },
+        { id: 117, g: "FH5", y: 1973, m: "Porsche", n: "911 Carrera RS", pi: 512, c: "B", v: 450000, co: "Germany", dlc: null },
+        { id: 118, g: "FH5", y: 2023, m: "Chevrolet", n: "Corvette Z06", pi: 822, c: "S1", v: 95000, co: "USA", dlc: null },
+        { id: 119, g: "FH5", y: 1969, m: "Dodge", n: "Charger R/T", pi: 445, c: "C", v: 103000, co: "USA", dlc: null },
+
+        // FORZA HORIZON 4
         { id: 104, g: "FH4", y: 2018, m: "McLaren", n: "Senna", pi: 977, c: "S2", v: 1000000, co: "UK", dlc: null },
         { id: 105, g: "FH4", y: 1965, m: "Shelby", n: "Cobra 427 S/C", pi: 748, c: "A", v: 2100000, co: "USA", dlc: null },
         { id: 106, g: "FH4", y: 2019, m: "LEGO", n: "Speed Champions Senna", pi: 915, c: "S2", v: 0, co: "UK", dlc: "LEGO Speed Champions" },
+        { id: 120, g: "FH4", y: 2012, m: "Porsche", n: "911 GT2 RS", pi: 918, c: "S2", v: 245000, co: "Germany", dlc: null },
+        { id: 121, g: "FH4", y: 1982, m: "Porsche", n: "911 Turbo 3.3", pi: 588, c: "B", v: 150000, co: "Germany", dlc: null },
+        { id: 122, g: "FH4", y: 1998, m: "Nissan", n: "R34 Skyline GT-R", pi: 665, c: "A", v: 51000, co: "Japan", dlc: null },
+        { id: 123, g: "FH4", y: 2010, m: "Noble", n: "M600", pi: 885, c: "S1", v: 450000, co: "UK", dlc: null },
+
+        // FORZA HORIZON 6 (Speculative Launch List)
         { id: 107, g: "FH6", y: 2025, m: "Nissan", n: "GT-R Proto", pi: 850, c: "S1", v: 150000, co: "Japan", dlc: null },
-        { id: 108, g: "FH6", y: 2026, m: "Toyota", n: "GR Supra Concept", pi: 830, c: "S1", v: 120000, co: "Japan", dlc: "Japan Launch Pass" }
+        { id: 108, g: "FH6", y: 2026, m: "Toyota", n: "GR Supra Concept", pi: 830, c: "S1", v: 120000, co: "Japan", dlc: "Japan Launch Pass" },
+        { id: 114, g: "FH6", y: 2026, m: "Mitsubishi", n: "Lancer Evolution XI", pi: 790, c: "A", v: 65000, co: "Japan", dlc: null },
+        { id: 124, g: "FH6", y: 2026, m: "Porsche", n: "Mission X", pi: 998, c: "S2", v: 2000000, co: "Germany", dlc: "Day One Car Pack" },
+        { id: 125, g: "FH6", y: 2025, m: "Mazda", n: "RX-9 Concept", pi: 812, c: "S1", v: 110000, co: "Japan", dlc: null }
     ];
+
 
     const renderGarage = (search = "", sort = "mfr") => {
         const container = document.getElementById('garage-view');
@@ -624,11 +612,30 @@
         };
     };
 
-    const processManualAdd = () => {
-        const input = document.getElementById('manual-car-input').value.toLowerCase();
+       const processManualAdd = () => {
+        const input = document.getElementById('manual-car-input').value.toLowerCase().trim();
+        if(!input) return;
+
+        // Searches across Year, Manufacturer, and Name
         const match = CAR_DB.find(c => 
-            (c.y + " " + c.m + " " + c.n).toLowerCase().includes(input) && c.g === state.currentGame
+            `${c.y} ${c.m} ${c.n}`.toLowerCase().includes(input) && c.g === state.currentGame
         );
+
+        if(match) {
+            if(!state.owned.includes(match.id)) {
+                state.owned.push(match.id);
+                save(); 
+                renderGarage(); 
+                alert(`SUCCESS: ${match.m} ${match.n} added to Garage.`);
+            } else {
+                alert("This vehicle is already in your collection.");
+            }
+            closeAddModal();
+        } else {
+            alert("UNIT NOT FOUND: Ensure you include the Year or full Manufacturer name.");
+        }
+    };
+
 
         if(match) {
             if(!state.owned.includes(match.id)) state.owned.push(match.id);
