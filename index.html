@@ -3,162 +3,650 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forza Garage Community | V35</title>
+    <title>Forza Garage Community</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --fh-pink: #ff2d55; --fh-yellow: #f2d638; --bg-carbon: #050505; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; background: var(--bg-carbon); color: white; font-family: 'Inter', sans-serif; overflow: hidden; width: 100vw; height: 100vh; }
+        :root {
+            --fh-pink: #ff2d55;
+            --fh-yellow: #f2d638;
+            --fh-cyan: #00f7ff;
+            --bg-black: #050506;
+            --panel-bg: #121217;
+            --neon-shadow: 0 0 15px rgba(255, 45, 85, 0.4);
+        }
 
-        /* --- ONBOARDING OVERLAY --- */
-        #welcome-overlay { position: fixed; inset: 0; background: var(--bg-carbon); z-index: 20000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 25px; }
-        .fest-title { font-family: 'Oswald'; font-style: italic; font-size: 3.5rem; color: var(--fh-pink); text-transform: uppercase; margin-bottom: 5px; animation: pulse 2s infinite; }
-        .fest-sub { font-weight: 900; letter-spacing: 2px; color: var(--fh-yellow); margin-bottom: 30px; }
-        .name-box { background: #111; border: 3px solid #333; padding: 18px; border-radius: 15px; width: 100%; max-width: 350px; color: white; font-size: 1.3rem; text-align: center; margin-bottom: 25px; font-family: 'Oswald'; outline: none; }
-        .name-box:focus { border-color: var(--fh-pink); }
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body, html { 
+            margin: 0; padding: 0; 
+            background: var(--bg-black); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+            width: 100vw; height: 100vh; 
+        }
 
-        /* --- APP UI --- */
-        .app-header { background: #000; border-bottom: 4px solid var(--fh-pink); padding: 15px; position: relative; z-index: 1000; }
-        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        #display-name { font-family: 'Oswald'; color: var(--fh-yellow); font-style: italic; font-size: 1.2rem; }
+        /* --- WATERMARK & SERIAL --- */
+        #footer-meta { 
+            position: fixed; bottom: 8px; left: 0; right: 0; 
+            display: flex; justify-content: center; gap: 20px;
+            font-size: 10px; font-family: monospace; opacity: 0.15; 
+            z-index: 99999; pointer-events: none; letter-spacing: 2px;
+        }
+
+        /* --- FULLSCREEN OVERLAY SYSTEM --- */
+        .overlay { 
+            position: fixed; inset: 0; 
+            background: var(--bg-black); 
+            z-index: 10000; 
+            display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            text-align: center; padding: 30px;
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .hidden { display: none !important; }
+        .slide-out { transform: translateY(-100%); }
+
+        /* --- PUMPING TYPOGRAPHY --- */
+        .hero-text { 
+            font-family: 'Oswald'; font-style: italic; font-size: 4.5rem; 
+            line-height: 0.9; color: var(--fh-pink); 
+            text-transform: uppercase; margin-bottom: 10px;
+            text-shadow: var(--neon-shadow);
+            animation: textPulse 2s infinite;
+        }
+        @keyframes textPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+
+        .sub-text { 
+            font-weight: 900; letter-spacing: 3px; 
+            color: var(--fh-yellow); font-size: 1.1rem; 
+            text-transform: uppercase; margin-bottom: 40px; 
+        }
+
+        /* --- INPUTS & BUTTONS --- */
+        .gamertag-input { 
+            background: transparent; border: 4px solid #222; 
+            padding: 20px; border-radius: 12px; width: 100%; max-width: 450px; 
+            color: white; font-size: 1.8rem; text-align: center; 
+            font-family: 'Oswald'; margin-bottom: 30px; 
+            transition: 0.3s;
+        }
+        .gamertag-input:focus { border-color: var(--fh-pink); box-shadow: var(--neon-shadow); }
+
+        .btn-horizon { 
+            width: 100%; max-width: 450px; padding: 22px; 
+            background: var(--fh-pink); border-radius: 12px; border: none; 
+            color: white; font-weight: 900; font-size: 1.3rem; 
+            cursor: pointer; text-transform: uppercase; transition: 0.2s; 
+            margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+        .btn-horizon:active { transform: scale(0.96); }
+        .btn-outline { background: #1a1a20; border: 2px solid #333; }
+        .btn-outline:hover { border-color: var(--fh-yellow); }
+
+        /* --- ANIMATION FX LAYER --- */
+        #fx-canvas { position: fixed; inset: 0; z-index: 9000; pointer-events: none; overflow: hidden; }
+        .fx-item { 
+            position: absolute; width: 124px; height: 124px; 
+            font-size: 8rem; display: flex; align-items: center; 
+            justify-content: center; visibility: hidden; 
+        }
+
+        /* FH4: Autumn Leaves */
+        @keyframes blowFH4 { 
+            0% { left: -20%; transform: rotate(0deg) translateY(0); visibility: visible; } 
+            100% { left: 120%; transform: rotate(720deg) translateY(50px); visibility: visible; } 
+        }
+        /* FH5: Piñatas */
+        @keyframes danceFH5 { 
+            0% { left: -20%; transform: rotate(-15deg); visibility: visible; } 
+            25% { transform: rotate(15deg) translateY(-60px); }
+            50% { transform: rotate(-15deg) translateY(0); }
+            75% { transform: rotate(15deg) translateY(-60px); }
+            100% { left: 120%; transform: rotate(-15deg); visibility: visible; } 
+        }
+        /* FH6: Sakura */
+        @keyframes blowFH6 { 
+            0% { left: -20%; transform: rotate(0deg) scale(0.8); visibility: visible; opacity: 0; } 
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { left: 120%; transform: rotate(360deg) scale(1.2); visibility: visible; opacity: 0; } 
+        }
+
+        /* --- MAIN UI HEADER --- */
+        .header { 
+            background: #000; border-bottom: 5px solid var(--fh-pink); 
+            padding: 15px 25px; position: relative; z-index: 5000; 
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .nav-top { display: flex; justify-content: space-between; align-items: center; }
+        .game-select-box { 
+            background: #111; color: var(--fh-pink); 
+            font-family: 'Oswald'; font-style: italic; font-size: 1.6rem; 
+            border: 2px solid #222; border-radius: 8px; padding: 5px 10px;
+        }
+        .username-banner { font-family: 'Oswald'; text-transform: uppercase; letter-spacing: 1px; color: white; }
         
-        .garage-scroll { height: calc(100vh - 170px); overflow-y: scroll; padding: 15px; }
-        .car-item { background: #111; border-radius: 15px; padding: 20px; margin-bottom: 12px; border: 1px solid #222; position: relative; opacity: 0.4; }
-        .car-item.owned { border-left: 10px solid var(--fh-pink); opacity: 1; background: #1a050a; }
-        .dots { position: absolute; right: 10px; top: 10px; font-size: 2rem; color: var(--fh-yellow); padding: 10px; z-index: 50; cursor: pointer; }
-
-        /* --- MODALS --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 11000; display: none; flex-direction: column; padding: 40px 20px; overflow-y: auto; }
-        .car-img { width: 100%; border-radius: 15px; margin: 20px 0; border: 2px solid #333; background: #000; min-height: 180px; object-fit: contain; }
-        .btn-action { width: 100%; padding: 18px; background: var(--fh-pink); border-radius: 12px; border: none; color: white; font-weight: 900; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; }
-
-        /* --- TUTORIAL --- */
-        #tutor-box { position: fixed; bottom: 30px; left: 20px; right: 20px; background: var(--fh-yellow); color: #000; padding: 25px; border-radius: 20px; z-index: 15000; display: none; font-weight: 900; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-        .tutor-highlight { z-index: 16000 !important; outline: 6px solid var(--fh-yellow); outline-offset: 5px; position: relative; }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        /* --- CAR CARDS --- */
+        .garage-container { height: calc(100vh - 160px); overflow-y: auto; padding: 20px; display: grid; gap: 15px; }
+        .car-box { 
+            background: var(--panel-bg); border: 2px solid #222; border-radius: 15px; 
+            padding: 20px; position: relative; opacity: 0.3; transition: 0.3s;
+        }
+        .car-box.owned { opacity: 1; border-left: 10px solid var(--fh-pink); background: linear-gradient(135deg, #121217 0%, #1a1a22 100%); }
+        .dot-menu-btn { position: absolute; top: 15px; right: 15px; font-size: 1.8rem; color: var(--fh-yellow); cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="welcome-overlay">
-        <div class="fest-title">WELCOME DRIVER!</div>
-        <div class="fest-sub">REGISTER FOR THE HORIZON FESTIVAL</div>
-        <input type="text" id="gamertag-input" class="name-box" placeholder="YOUR GAMERTAG">
-        <button class="btn-action" style="max-width:320px;" onclick="completeOnboarding()">START YOUR ENGINES</button>
+    <div id="footer-meta">
+        <span>SN: 8931-4501-COMM</span>
+        <span>CGJZCZJ</span>
+        <span>VER: 36.0.0</span>
     </div>
 
-    <div class="app-header">
-        <div class="top-nav">
-            <select id="game-sel" class="dropdown-ui" onchange="gameChange(this.value)" style="background:#222; color:white; padding:8px; border:1px solid #444; border-radius:8px; font-weight:900;">
-                <option value="FH4">FH4</option>
-                <option value="FH5" selected>FH5</option>
-                <option value="FH6">FH6</option>
-            </select>
-            <div id="display-name">---</div>
-            <div id="gear-btn" onclick="openSettings()" style="font-size:2rem; cursor:pointer;">⚙️</div>
-        </div>
-        <div class="controls" id="search-bar" style="display:flex; gap:8px;">
-            <input type="text" id="q" placeholder="Find a car..." oninput="doSearch()" style="flex:1; padding:12px; border-radius:10px; background:#151515; border:1px solid #333; color:white;">
-            <select id="sort" onchange="doSort(this.value)" style="background:#222; color:white; padding:8px; border-radius:8px; border:1px solid #444;">
-                <option value="AZ">A-Z</option>
-                <option value="MISS">Missing</option>
-            </select>
-        </div>
-    </div>
+    <div id="fx-canvas"></div>
 
-    <div id="car-list" class="garage-scroll"></div>
+    <div id="app-onboarding-container"></div>
 
-    <div id="tutor-box">
-        <p id="tutor-text"></p>
-        <button onclick="nextStep()" style="width:100%; padding:15px; background:#000; color:white; border:none; border-radius:10px; margin-top:15px; font-weight:900;">CONTINUE</button>
-    </div>
-
-    <div id="car-modal" class="modal">
-        <div style="text-align:right; font-size:2.5rem; margin-bottom:10px;" onclick="closeModals()">✕</div>
-        <h2 id="m-title" style="font-family:'Oswald'; font-size:2.2rem; border-bottom:4px solid var(--fh-pink); margin:0;"></h2>
-        <img id="m-img" class="car-img" src="" alt="Car Preview">
-        <button id="m-own-btn" class="btn-action">ADD TO GARAGE</button>
-        <button id="m-share-btn" class="btn-action" style="background:#0077ff; margin-top:12px;">SHARE TO SOCIALS</button>
-    </div>
+    <div id="main-app" class="hidden"></div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('fh_v35_save')) || { name: "", owned: [], step: 0 };
-        
-        // These link to your uploaded image filenames
-        const cars = [
-            {id:1, m:"Porsche", n:"911 GT3", img:"porsche_911_gt3.png"},
-            {id:2, m:"Toyota", n:"Supra RZ", img:"toyota_supra_rz.png"},
-            {id:3, m:"Dodge", n:"Charger R/T", img:"dodge_charger_rt.png"}
-        ];
-
-        window.onload = () => {
-            if(db.name) {
-                document.getElementById('welcome-overlay').style.display = 'none';
-                document.getElementById('display-name').innerText = db.name.toUpperCase();
-                render();
-            }
+        // GLOBAL STATE ENGINE
+        let state = JSON.parse(localStorage.getItem('horizon_v36_db')) || {
+            user: "",
+            currentGame: "FH5",
+            owned: [],
+            wishlist: [],
+            favorites: [],
+            dlcs: { FH4: [], FH5: [], FH6: [] },
+            onboarded: false,
+            tutorialStep: 0
         };
 
-        function completeOnboarding() {
-            const name = document.getElementById('gamertag-input').value;
-            if(!name) return;
-            db.name = name;
-            document.getElementById('display-name').innerText = name.toUpperCase();
-            document.getElementById('welcome-overlay').style.display = 'none';
-            save(); render();
-            startTutorial();
-        }
+        const save = () => localStorage.getItem('horizon_v36_db', JSON.stringify(state));
 
-        function render() {
-            const list = document.getElementById('car-list');
-            list.innerHTML = '';
-            cars.forEach(c => {
-                const item = document.createElement('div');
-                item.className = `car-item ${db.owned.includes(c.id) ? 'owned' : ''}`;
-                item.id = `car-card-${c.id}`;
-                item.innerHTML = `<div class="dots" onclick="openCar(${c.id})">⋮</div><b>${c.m} ${c.n}</b>`;
-                list.appendChild(item);
-            });
-        }
+        // FX ENGINE
+        const triggerFX = (game) => {
+            const canvas = document.getElementById('fx-canvas');
+            canvas.innerHTML = '';
+            const settings = {
+                'FH4': { count: 6, icon: '🍂', anim: 'blowFH4' },
+                'FH5': { count: 4, icon: '🪅', anim: 'danceFH5' },
+                'FH6': { count: 5, icon: '🌸', anim: 'blowFH6' }
+            }[game];
 
-        function openCar(id) {
-            const c = cars.find(x => x.id === id);
-            document.getElementById('m-title').innerText = `${c.m} ${c.n}`;
-            document.getElementById('m-img').src = c.img;
-            document.getElementById('m-own-btn').innerText = db.owned.includes(id) ? "REMOVE FROM GARAGE" : "ADD TO GARAGE";
-            document.getElementById('m-own-btn').onclick = () => {
-                if(db.owned.includes(id)) db.owned = db.owned.filter(i => i !== id);
-                else db.owned.push(id);
-                save(); render(); closeModals();
-            };
-            document.getElementById('car-modal').style.display = 'flex';
-        }
-
-        const tData = [
-            { id: "game-sel", text: "Switch between Horizon 4, 5, and 6 here." },
-            { id: "search-bar", text: "Find specific cars or filter for the ones you're missing." },
-            { id: "car-card-1", text: "Tap the dots to see the car and manage your collection." },
-            { id: "gear-btn", text: "Settings: Manage DLCs or reset your progress." }
-        ];
-
-        function startTutorial() { document.getElementById('tutor-box').style.display = 'block'; updateStep(); }
-        function nextStep() {
-            document.getElementById(tData[db.step].id).classList.remove('tutor-highlight');
-            db.step++;
-            if(db.step >= tData.length) document.getElementById('tutor-box').style.display = 'none';
-            else updateStep();
-            save();
-        }
-        function updateStep() {
-            const s = tData[db.step];
-            document.getElementById(s.id).classList.add('tutor-highlight');
-            document.getElementById('tutor-text').innerText = s.text;
-        }
-
-        function openSettings() { alert("Settings: DLC Management & Data Reset."); }
-        function save() { localStorage.setItem('fh_v35_save', JSON.stringify(db)); }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+            for(let i=0; i < settings.count; i++) {
+                const div = document.createElement('div');
+                div.className = 'fx-item';
+                div.innerText = settings.icon;
+                div.style.top = (15 + (Math.random() * 70)) + '%';
+                div.style.animation = `${settings.anim} ${2 + Math.random()}s ease-in-out forwards`;
+                div.style.animationDelay = (i * 0.2) + 's';
+                canvas.appendChild(div);
+            }
+        };
     </script>
+<div id="screen-welcome" class="overlay">
+    <h1 class="hero-text">WELCOME DRIVER</h1>
+    <div class="sub-text">ESTABLISH YOUR IDENTITY</div>
+    <input type="text" id="gamertag-input" class="gamertag-input" placeholder="ENTER GAMERTAG" maxlength="15">
+    <button class="btn-horizon" onclick="submitGamertag()">START YOUR ENGINES</button>
+</div>
+
+<div id="screen-tutorial" class="overlay hidden">
+    <div class="hero-text" style="font-size: 2.5rem;">V36 TRAINING</div>
+    <div id="tutor-text" class="sub-text" style="min-height: 80px;">Welcome to the most advanced Horizon tracker.</div>
+    <div id="tutor-visual" style="width: 100%; height: 200px; border: 2px dashed var(--fh-pink); border-radius: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #444;">
+        [SYSTEM SIMULATION]
+    </div>
+    <button class="btn-horizon" id="tutor-next-btn" onclick="nextTutorial()">NEXT LESSON</button>
+</div>
+
+<div id="screen-game-select" class="overlay hidden">
+    <h1 class="hero-text" style="font-size: 2.8rem;">CHOOSE COLLECTION</h1>
+    <div class="sub-text">PICK YOUR STARTING FESTIVAL</div>
+    <button class="btn-horizon" onclick="selectStartGame('FH4')">FORZA HORIZON 4</button>
+    <button class="btn-horizon" onclick="selectStartGame('FH5')" style="background: var(--fh-yellow); color: black;">FORZA HORIZON 5</button>
+    <button class="btn-horizon" onclick="selectStartGame('FH6')" style="background: var(--fh-cyan); color: black;">FORZA HORIZON 6</button>
+</div>
+
+<div id="screen-dlc-setup" class="overlay hidden">
+    <div style="background: var(--panel-bg); width: 100%; max-width: 500px; padding: 25px; border-radius: 20px; border: 2px solid var(--fh-pink); max-height: 80vh; overflow-y: auto; text-align: left;">
+        <h2 class="hero-text" style="font-size: 2rem; border-bottom: 2px solid #333; padding-bottom: 10px;">DLC ACQUISITION</h2>
+        <p style="font-weight: 900; color: #888; font-size: 0.9rem; margin-bottom: 20px;">Select your owned expansions. Cars will be added to your collection immediately.</p>
+        <div id="dlc-list-dynamic"></div>
+        <button class="btn-horizon" style="margin-top: 20px;" onclick="finishDlcSetup()">CONFIRM & SYNC</button>
+    </div>
+</div>
+
+<div id="screen-base-alert" class="overlay hidden">
+    <div style="background: #000; border: 3px solid var(--fh-yellow); padding: 30px; border-radius: 20px; max-width: 400px;">
+        <div style="font-size: 4rem; margin-bottom: 15px;">🏁</div>
+        <h2 style="font-family: 'Oswald'; color: var(--fh-yellow); margin-top: 0;">SYSTEM READY</h2>
+        <p style="font-weight: 900; line-height: 1.6;">This app starts with the base game car count. You can add more DLCs in the settings menu at any time.</p>
+        <button class="btn-horizon" onclick="finalizeOnboarding()" style="background: var(--fh-yellow); color: black;">OK</button>
+    </div>
+</div>
+
+<script>
+    // DLC DATA REPOSITORY
+    const DLC_DB = {
+        FH4: ["Fortune Island", "LEGO Speed Champions", "Best of Bond", "Formula Drift", "Hot Wheels Legends", "Welcome Pack", "Car Pass", "Barrett-Jackson"],
+        FH5: ["Hot Wheels", "Rally Adventure", "Premium Welcome Pack", "VIP Membership", "Car Pass", "Apex Allstars", "Universal Icons", "Fast X Pack"],
+        FH6: ["Japan Launch Pass", "Apex Expansion", "Neon Drift Pack", "Horizon Legends DLC", "Day One Car Pack"]
+    };
+
+    // ONBOARDING LOGIC
+    const submitGamertag = () => {
+        const input = document.getElementById('gamertag-input');
+        if(input.value.trim().length < 3) return alert("GAMERTAG TOO SHORT");
+        state.user = input.value.trim();
+        document.getElementById('screen-welcome').classList.add('slide-out');
+        setTimeout(() => {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-tutorial').classList.remove('hidden');
+        }, 500);
+    };
+
+    const tutorials = [
+        { text: "Tap the game code (FH4/5/6) in the top left to switch festivals.", visual: "🔄 NAVIGATION" },
+        { text: "Use the Search Bar to find specific cars across all games.", visual: "🔍 QUICK SEARCH" },
+        { text: "Tap the (+) button to add cars via Voice or Keyboard.", visual: "➕ MANUAL ADD" },
+        { text: "The 3-dot menu on any car card allows you to Star it for Wishlist or Heart it for Favorites.", visual: "⭐ FAVORITES" }
+    ];
+
+    const nextTutorial = () => {
+        if(state.tutorialStep < tutorials.length) {
+            document.getElementById('tutor-text').innerText = tutorials[state.tutorialStep].text;
+            document.getElementById('tutor-visual').innerText = tutorials[state.tutorialStep].visual;
+            state.tutorialStep++;
+        } else {
+            document.getElementById('screen-tutorial').classList.add('hidden');
+            document.getElementById('screen-game-select').classList.remove('hidden');
+        }
+    };
+
+    const selectStartGame = (game) => {
+        state.currentGame = game;
+        const list = document.getElementById('dlc-list-dynamic');
+        list.innerHTML = '';
+        
+        Object.keys(DLC_DB).forEach(gameTitle => {
+            const group = document.createElement('div');
+            group.innerHTML = `<h3 style="font-family:'Oswald'; color:var(--fh-pink); margin-top:20px;">${gameTitle}</h3>`;
+            DLC_DB[gameTitle].forEach(dlc => {
+                const label = document.createElement('label');
+                label.style = "display: flex; align-items: center; gap: 10px; background: #1a1a20; padding: 12px; border-radius: 8px; margin-bottom: 5px; font-weight: 900; font-size: 0.9rem;";
+                label.innerHTML = `<input type="checkbox" data-game="${gameTitle}" value="${dlc}" style="width:20px; height:20px;"> ${dlc}`;
+                group.appendChild(label);
+            });
+            list.appendChild(group);
+        });
+
+        document.getElementById('screen-game-select').classList.add('hidden');
+        document.getElementById('screen-dlc-setup').classList.remove('hidden');
+    };
+
+    const finishDlcSetup = () => {
+        const checks = document.querySelectorAll('#dlc-list-dynamic input:checked');
+        checks.forEach(c => {
+            const game = c.getAttribute('data-game');
+            state.dlcs[game].push(c.value);
+        });
+        document.getElementById('screen-dlc-setup').classList.add('hidden');
+        document.getElementById('screen-base-alert').classList.remove('hidden');
+    };
+
+    const finalizeOnboarding = () => {
+        state.onboarded = true;
+        save();
+        document.getElementById('screen-base-alert').classList.add('hidden');
+        // Installment 3 will initiate the garage boot-up here
+        initGarage(); 
+    };
+</script>
+<div class="header">
+    <div class="nav-top">
+        <div class="header-actions">
+            <select id="game-nav-select" class="game-select-box" onchange="switchGame(this.value)">
+                <option value="FH4">FH4</option>
+                <option value="FH5">FH5</option>
+                <option value="FH6">FH6</option>
+            </select>
+        </div>
+        
+        <div class="username-banner" id="display-gamertag">---</div>
+        
+        <div class="header-actions">
+            <div class="icon-btn" onclick="toggleAddMenu()">➕</div>
+            <div class="icon-btn" onclick="openSettings()">⚙️</div>
+        </div>
+    </div>
+
+    <div class="search-row">
+        <input type="text" id="main-search" class="search-bar" placeholder="SEARCH COLLECTION..." oninput="filterGarage()">
+        <select id="sort-engine" class="sort-dropdown" onchange="filterGarage()">
+            <option value="mfr">MANUFACTURER</option>
+            <option value="pi">PI (RATING)</option>
+            <option value="class">CLASS</option>
+            <option value="val">VALUE</option>
+            <option value="wish">WISHLIST</option>
+            <option value="fav">FAVORITES</option>
+            <option value="year">YEAR</option>
+            <option value="country">COUNTRY</option>
+        </select>
+    </div>
+
+    <div id="add-car-menu" class="dot-menu" style="top: 60px; right: 60px; width: 220px; background: #111; border: 2px solid var(--fh-pink);">
+        <div class="dot-action" onclick="initKeyboardAdd()">⌨️ KEYBOARD INPUT</div>
+        <div class="dot-action" onclick="initVoiceAdd()">🎙️ VOICE COMMAND</div>
+    </div>
+</div>
+
+<div id="garage-view" class="garage-container">
+    </div>
+
+<script>
+    // NAVIGATION & SWITCHING LOGIC
+    const initGarage = () => {
+        document.getElementById('main-app').classList.remove('hidden');
+        document.getElementById('display-gamertag').innerText = state.user.toUpperCase();
+        document.getElementById('game-nav-select').value = state.currentGame;
+        
+        // Trigger initial animation for the chosen game
+        setTimeout(() => triggerFX(state.currentGame), 800);
+        
+        // Installment 4 will hook in the rendering here
+        renderGarage();
+    };
+
+    const switchGame = (game) => {
+        state.currentGame = game;
+        save();
+        
+        // Trigger the specific FX requested
+        triggerFX(game);
+        
+        // Reload garage data for the specific game
+        renderGarage();
+    };
+
+    const toggleAddMenu = () => {
+        const menu = document.getElementById('add-car-menu');
+        menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+    };
+
+    // FILTER & SORT ENGINE
+    const filterGarage = () => {
+        const query = document.getElementById('main-search').value.toLowerCase();
+        const sortBy = document.getElementById('sort-engine').value;
+        
+        // We will call the actual filter function defined in Installment 4
+        if(typeof renderGarage === "function") {
+            renderGarage(query, sortBy);
+        }
+    };
+
+    // UI HELPER
+    window.addEventListener('click', (e) => {
+        const addMenu = document.getElementById('add-car-menu');
+        if (!e.target.closest('.header-actions') && addMenu.style.display === 'flex') {
+            addMenu.style.display = 'none';
+        }
+    });
+</script>
+<script>
+    // THE STARTER DATABASE (Expand this array with the same format for more cars)
+    const CAR_DB = [
+        { id: 101, g: "FH5", y: 2021, m: "Mercedes-AMG", n: "One", pi: 927, c: "S2", v: 2700000, co: "Germany", dlc: null },
+        { id: 102, g: "FH5", y: 2020, m: "Lamborghini", n: "Huracán STO", pi: 820, c: "S1", v: 350000, co: "Italy", dlc: "Car Pass" },
+        { id: 103, g: "FH5", y: 1995, m: "Porsche", n: "911 Carrera 2 by GW", pi: 815, c: "S1", v: 500000, co: "Germany", dlc: null },
+        { id: 104, g: "FH4", y: 2018, m: "McLaren", n: "Senna", pi: 977, c: "S2", v: 1000000, co: "UK", dlc: null },
+        { id: 105, g: "FH4", y: 1965, m: "Shelby", n: "Cobra 427 S/C", pi: 748, c: "A", v: 2100000, co: "USA", dlc: null },
+        { id: 106, g: "FH4", y: 2019, m: "LEGO", n: "Speed Champions Senna", pi: 915, c: "S2", v: 0, co: "UK", dlc: "LEGO Speed Champions" },
+        { id: 107, g: "FH6", y: 2025, m: "Nissan", n: "GT-R Proto", pi: 850, c: "S1", v: 150000, co: "Japan", dlc: null },
+        { id: 108, g: "FH6", y: 2026, m: "Toyota", n: "GR Supra Concept", pi: 830, c: "S1", v: 120000, co: "Japan", dlc: "Japan Launch Pass" }
+    ];
+
+    const renderGarage = (search = "", sort = "mfr") => {
+        const container = document.getElementById('garage-view');
+        container.innerHTML = '';
+
+        // Filter by Game and Search Query
+        let filtered = CAR_DB.filter(c => {
+            const matchesGame = c.g === state.currentGame;
+            const matchesSearch = (c.m + " " + c.n).toLowerCase().includes(search.toLowerCase());
+            
+            // If car is DLC, only show if they own it OR if they've added it manually
+            const isOwnedDlc = c.dlc && state.dlcs[c.g].includes(c.dlc);
+            const isManuallyOwned = state.owned.includes(c.id);
+            
+            // Logic: Show if Base Game OR if they own the DLC OR if it's already in their collection
+            const shouldShow = !c.dlc || isOwnedDlc || isManuallyOwned;
+            
+            return matchesGame && matchesSearch && shouldShow;
+        });
+
+        // Sort Logic
+        filtered.sort((a, b) => {
+            if (sort === "pi") return b.pi - a.pi;
+            if (sort === "val") return b.v - a.v;
+            if (sort === "year") return a.y - b.y;
+            if (sort === "wish") return (state.wishlist.includes(b.id) ? 1 : 0) - (state.wishlist.includes(a.id) ? 1 : 0);
+            if (sort === "fav") return (state.favorites.includes(b.id) ? 1 : 0) - (state.favorites.includes(a.id) ? 1 : 0);
+            return a.m.localeCompare(b.m);
+        });
+
+        filtered.forEach(car => {
+            const isOwned = state.owned.includes(car.id) || (car.dlc && state.dlcs[car.g].includes(car.dlc));
+            const card = document.createElement('div');
+            card.className = `car-box ${isOwned ? 'owned' : ''} ${state.wishlist.includes(car.id) ? 'wished' : ''} ${state.favorites.includes(car.id) ? 'faved' : ''}`;
+            
+            card.innerHTML = `
+                <div class="dot-trigger" onclick="toggleCardMenu(event, ${car.id})">⋮</div>
+                <div id="menu-${car.id}" class="dot-menu">
+                    <div class="dot-action" onclick="toggleOwned(${car.id})">${isOwned ? 'REMOVE FROM GARAGE' : 'ADD TO COLLECTION'}</div>
+                    <div class="dot-action" onclick="toggleWish(${car.id})">⭐ WISHLIST</div>
+                    <div class="dot-action" onclick="toggleFav(${car.id})">❤️ FAVORITE</div>
+                </div>
+                <div class="car-header">
+                    <div class="car-title">
+                        <span class="car-year">${car.y}</span><br>
+                        <span style="color:var(--fh-yellow)">${car.m.toUpperCase()}</span><br>
+                        ${car.n.toUpperCase()}
+                    </div>
+                </div>
+                <div class="car-stats">
+                    <div class="stat-badge"><span class="stat-pi">${car.c} ${car.pi}</span></div>
+                    <div class="stat-badge">CR ${car.v.toLocaleString()}</div>
+                </div>
+                <div class="tag-icons">
+                    <span class="tag-wish">⭐</span>
+                    <span class="tag-fav">❤️</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    };
+
+    // ACTION LOGIC
+    const toggleCardMenu = (e, id) => {
+        e.stopPropagation();
+        const allMenus = document.querySelectorAll('.dot-menu');
+        allMenus.forEach(m => { if(m.id !== `menu-${id}`) m.style.display = 'none'; });
+        const m = document.getElementById(`menu-${id}`);
+        m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+    };
+
+    const toggleOwned = (id) => {
+        if(state.owned.includes(id)) state.owned = state.owned.filter(i => i !== id);
+        else state.owned.push(id);
+        save(); renderGarage();
+    };
+
+    const toggleWish = (id) => {
+        if(state.wishlist.includes(id)) state.wishlist = state.wishlist.filter(i => i !== id);
+        else state.wishlist.push(id);
+        save(); renderGarage();
+    };
+
+    const toggleFav = (id) => {
+        if(state.favorites.includes(id)) state.favorites = state.favorites.filter(i => i !== id);
+        else state.favorites.push(id);
+        save(); renderGarage();
+    };
+
+    // Global click to close menus
+    window.addEventListener('click', () => {
+        document.querySelectorAll('.dot-menu').forEach(m => m.style.display = 'none');
+    });
+</script>
+<div id="modal-settings" class="fullscreen-overlay hidden" style="background: rgba(5,5,6,0.95);">
+    <div class="modal-content">
+        <h2 class="modal-title">SETTINGS</h2>
+        
+        <div style="margin-bottom: 25px;">
+            <p style="color:var(--fh-yellow); font-weight:900; margin-bottom:5px;">CHANGE USERNAME</p>
+            <input type="text" id="new-username" class="gamertag-input" style="font-size: 1.2rem; padding: 10px; margin-bottom: 10px;" placeholder="ENTER NAME">
+            <button class="btn-horizon" style="padding: 10px;" onclick="updateUsername()">UPDATE</button>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <p style="color:var(--fh-yellow); font-weight:900; margin-bottom:10px;">DLC MANAGEMENT</p>
+            <button class="btn-horizon btn-outline" onclick="openDlcManager()">MANAGE OWNED DLC</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn-horizon btn-outline" style="color: #ff4444;" onclick="clearList('wishlist')">CLEAR WISHLIST</button>
+            <button class="btn-horizon btn-outline" style="color: #ff4444;" onclick="clearList('favorites')">CLEAR FAVORITES</button>
+            <button class="btn-horizon btn-outline" onclick="location.reload()">CLEAR CACHE (REBOOT)</button>
+        </div>
+        
+        <button class="btn-horizon" style="margin-top: 30px; background: #333;" onclick="closeSettings()">CLOSE</button>
+    </div>
+</div>
+
+<div id="modal-add-car" class="fullscreen-overlay hidden">
+    <div class="modal-content" style="text-align: center;">
+        <h2 id="add-title" class="modal-title">ADD CAR</h2>
+        <div id="voice-status" class="sub-text" style="display:none; color:var(--fh-pink);">LISTENING...</div>
+        <div id="add-input-container">
+            <input type="text" id="manual-car-input" class="gamertag-input" style="font-size: 1.2rem;" placeholder="YEAR MAKE MODEL">
+        </div>
+        <div id="voice-attempts" style="font-size: 10px; opacity: 0.5; margin-bottom: 10px;"></div>
+        <button id="add-confirm-btn" class="btn-horizon" onclick="processManualAdd()">CONFIRM ADD</button>
+        <button class="btn-horizon" style="background: #333;" onclick="closeAddModal()">CANCEL</button>
+    </div>
+</div>
+
+<script>
+    // --- SETTINGS LOGIC ---
+    const openSettings = () => document.getElementById('modal-settings').classList.remove('hidden');
+    const closeSettings = () => document.getElementById('modal-settings').classList.add('hidden');
+
+    const updateUsername = () => {
+        const name = document.getElementById('new-username').value.trim();
+        if(name) {
+            state.user = name;
+            document.getElementById('display-gamertag').innerText = name.toUpperCase();
+            save();
+            alert("IDENTITY UPDATED");
+        }
+    };
+
+    const openDlcManager = () => {
+        closeSettings();
+        selectStartGame(state.currentGame); // Re-uses the DLC selector from Installment 2
+    };
+
+    const clearList = (listName) => {
+        if(confirm(`Wipe all ${listName}?`)) {
+            state[listName] = [];
+            save();
+            renderGarage();
+        }
+    };
+
+    // --- ADD CAR LOGIC (KEYBOARD & VOICE) ---
+    let voiceFailCount = 0;
+
+    const closeAddModal = () => {
+        document.getElementById('modal-add-car').classList.add('hidden');
+        document.getElementById('voice-status').style.display = 'none';
+        voiceFailCount = 0;
+    };
+
+    const initKeyboardAdd = () => {
+        document.getElementById('add-title').innerText = "KEYBOARD ENTRY";
+        document.getElementById('add-input-container').style.display = 'block';
+        document.getElementById('add-confirm-btn').style.display = 'block';
+        document.getElementById('modal-add-car').classList.remove('hidden');
+    };
+
+    const initVoiceAdd = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return alert("Voice not supported on this browser.");
+
+        const recognition = new SpeechRecognition();
+        document.getElementById('add-title').innerText = "VOICE COMMAND";
+        document.getElementById('voice-status').style.display = 'block';
+        document.getElementById('add-input-container').style.display = 'none';
+        document.getElementById('add-confirm-btn').style.display = 'none';
+        document.getElementById('modal-add-car').classList.remove('hidden');
+
+        recognition.start();
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            document.getElementById('voice-status').innerText = `HEARD: "${transcript}"`;
+            
+            // Search for car in DB
+            const match = CAR_DB.find(c => 
+                (c.m + " " + c.n).toLowerCase().includes(transcript) && c.g === state.currentGame
+            );
+
+            if(match) {
+                if(confirm(`Found ${match.y} ${match.m} ${match.n}. Add to garage?`)) {
+                    if(!state.owned.includes(match.id)) state.owned.push(match.id);
+                    save(); renderGarage(); closeAddModal();
+                }
+            } else {
+                voiceFailCount++;
+                if(voiceFailCount >= 3) {
+                    alert("Voice search failed 3 times. Reverting to keyboard.");
+                    initKeyboardAdd();
+                } else {
+                    document.getElementById('voice-attempts').innerText = `Attempts: ${voiceFailCount}/3`;
+                    recognition.start();
+                }
+            }
+        };
+    };
+
+    const processManualAdd = () => {
+        const input = document.getElementById('manual-car-input').value.toLowerCase();
+        const match = CAR_DB.find(c => 
+            (c.y + " " + c.m + " " + c.n).toLowerCase().includes(input) && c.g === state.currentGame
+        );
+
+        if(match) {
+            if(!state.owned.includes(match.id)) state.owned.push(match.id);
+            save(); renderGarage(); closeAddModal();
+        } else {
+            alert("CAR NOT FOUND. Be specific (e.g., '2021 Mercedes One')");
+        }
+    };
+
+    // --- APP INITIALIZATION ENGINE ---
+    window.onload = () => {
+        if(state.onboarded) {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            initGarage();
+        }
+    };
+</script>
 </body>
 </html>
+
+    
